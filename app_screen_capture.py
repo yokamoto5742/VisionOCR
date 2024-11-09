@@ -1,18 +1,17 @@
 import tkinter as tk
 from tkinter import messagebox
-
 import pyautogui
 from PIL import Image
 from typing import Optional, Tuple
-
 from config_manager import ConfigManager
-from service_ocr import perform_ocr
+from vision_ocr_service import VisionOCRService
 
 
 class ScreenCapture:
     def __init__(self) -> None:
         self.root: tk.Tk = tk.Tk()
         self.root.clipboard_clear()
+        self.ocr_service = VisionOCRService()
         self._setup_window()
         self._setup_canvas()
         self._bind_events()
@@ -93,8 +92,7 @@ class ScreenCapture:
         right = max(self.start_x, self.end_x)
         bottom = max(self.start_y, self.end_y)
 
-        # 選択範囲が小さすぎる場合はNoneを返す
-        if right - left < 5 or bottom - top < 5:  # 最小サイズは5ピクセル
+        if right - left < 5 or bottom - top < 5:
             return None
 
         return left, top, right, bottom
@@ -103,20 +101,24 @@ class ScreenCapture:
         try:
             bounds = self._get_screenshot_bounds()
             if bounds is None:
-                messagebox.showwarning('OCR結果', 'テキストを検出できませんでした。')
+                messagebox.showwarning('OCR結果', 'スクリーンショットの範囲が小さすぎます。')
                 self.root.quit()
                 return
 
             left, top, right, bottom = bounds
             screenshot = pyautogui.screenshot(region=(left, top, right - left, bottom - top))
 
-            text = perform_ocr(screenshot)
-            if not text.strip():
-                messagebox.showwarning('OCR結果', 'テキストを検出できませんでした。')
-                return
+            try:
+                text = self.ocr_service.perform_ocr(screenshot)
+                if not text.strip():
+                    messagebox.showwarning('OCR結果', 'テキストを検出できませんでした。')
+                    return
 
-            self.root.clipboard_clear()
-            self.root.clipboard_append(text)
+                self.root.clipboard_clear()
+                self.root.clipboard_append(text)
+
+            except Exception as ocr_error:
+                messagebox.showerror('OCRエラー', f'テキスト認識中にエラーが発生しました: {str(ocr_error)}')
 
         except Exception as e:
-            messagebox.showerror('OCRエラー', f'{str(e)}')
+            messagebox.showerror('キャプチャエラー', f'スクリーンショット処理中にエラーが発生しました: {str(e)}')
