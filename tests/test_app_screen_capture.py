@@ -7,18 +7,32 @@ from app_screen_capture import ScreenCapture
 
 
 @pytest.fixture
-def mock_tk():
+def mock_canvas():
+    canvas = MagicMock()
+    canvas.create_rectangle = MagicMock(return_value=1)
+    canvas.delete = MagicMock()
+    return canvas
+
+
+@pytest.fixture
+def mock_tk(mock_canvas):
     with patch('tkinter.Tk') as mock:
-        # Tkインスタンスのモック作成
         tk_instance = mock.return_value
         tk_instance.winfo_screenwidth.return_value = 1920
         tk_instance.winfo_screenheight.return_value = 1080
 
-        # Canvasのモック作成
-        canvas_mock = MagicMock()
-        tk_instance.Canvas.return_value = canvas_mock
+        mock_canvas_class = MagicMock()
+        mock_canvas_class.return_value = mock_canvas
+        tk_instance.Canvas = mock_canvas_class
 
         yield tk_instance
+
+
+@pytest.fixture
+def screen_capture(mock_tk, mock_config_manager, mock_vision_ocr, mock_canvas):
+    instance = ScreenCapture()
+    instance.canvas = mock_canvas
+    return instance
 
 
 @pytest.fixture
@@ -35,11 +49,6 @@ def mock_vision_ocr():
         ocr_instance = mock.return_value
         ocr_instance.perform_ocr.return_value = "テスト文字列"
         yield ocr_instance
-
-
-@pytest.fixture
-def screen_capture(mock_tk, mock_config_manager, mock_vision_ocr):
-    return ScreenCapture()
 
 
 def test_initialization(screen_capture, mock_tk):
