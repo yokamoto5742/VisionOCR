@@ -6,7 +6,6 @@ from typing import Final, List, Tuple, Optional
 
 
 def get_config_path() -> Path:
-    """設定ファイルのパスを取得する"""
     base_path: Path = Path(sys._MEIPASS if getattr(sys, 'frozen', False) else os.path.dirname(__file__))
     return base_path / 'config.ini'
 
@@ -21,7 +20,6 @@ class ConfigManager:
         self.load_config()
 
     def load_config(self) -> None:
-        """設定ファイルを読み込む"""
         if not self.config_file.exists():
             return
 
@@ -36,7 +34,6 @@ class ConfigManager:
                 raise ConfigError(f"Failed to load config: {e}") from e
 
     def save_config(self) -> None:
-        """設定ファイルを保存する"""
         try:
             with open(self.config_file, 'w', encoding='utf-8') as configfile:
                 self.config.write(configfile)
@@ -44,7 +41,6 @@ class ConfigManager:
             raise ConfigError(f"Failed to save config: {e}") from e
 
     def get_window_geometry(self) -> List[int]:
-        """ウィンドウの位置とサイズを取得する"""
         try:
             geometry: str = self.config.get('WindowSettings', 'geometry', fallback='100,100,800,600')
             return [int(val) for val in geometry.split(',')]
@@ -52,11 +48,9 @@ class ConfigManager:
             raise ConfigError(f"Invalid window geometry format: {e}") from e
 
     def get_font_size(self) -> int:
-        """フォントサイズを取得する"""
         return self.config.getint('WindowSettings', 'font_size', fallback=12)
 
     def get_screen_capture_settings(self) -> Tuple[float, int]:
-        """画面キャプチャの設定を取得する"""
         try:
             transparency: float = self.config.getfloat('ScreenCapture', 'transparency', fallback=0.2)
             outline_width: int = self.config.getint('ScreenCapture', 'selection_outline_width', fallback=2)
@@ -64,23 +58,15 @@ class ConfigManager:
         except ValueError as e:
             raise ConfigError(f"Invalid screen capture settings: {e}") from e
 
-    def get_tesseract_path(self) -> str:
-        """Tesseractの実行ファイルパスを取得する"""
-        return self.config.get('Paths', 'tesseract_path', 
-                             fallback=r'C:\Program Files\Tesseract-OCR\tesseract.exe')
-
     def get_input_mode(self) -> bool:
-        """入力モード（追記/上書き）の設定を取得する"""
         return self.config.getboolean('WindowSettings', 'append_mode', fallback=True)
 
     def set_window_geometry(self, x: int, y: int, width: int, height: int) -> None:
-        """ウィンドウの位置とサイズを設定する"""
         self._ensure_section('WindowSettings')
         self.config['WindowSettings']['geometry'] = f"{x},{y},{width},{height}"
         self.save_config()
 
     def set_font_size(self, size: int) -> None:
-        """フォントサイズを設定する"""
         if size <= 0:
             raise ValueError("Font size must be positive")
         self._ensure_section('WindowSettings')
@@ -88,7 +74,6 @@ class ConfigManager:
         self.save_config()
 
     def set_screen_capture_settings(self, transparency: float, outline_width: int) -> None:
-        """画面キャプチャの設定を保存する"""
         if not 0 <= transparency <= 1:
             raise ValueError("Transparency must be between 0 and 1")
         if outline_width <= 0:
@@ -99,18 +84,7 @@ class ConfigManager:
         self.config['ScreenCapture']['selection_outline_width'] = str(outline_width)
         self.save_config()
 
-    def set_tesseract_path(self, path: str | Path) -> None:
-        """Tesseractの実行ファイルパスを設定する"""
-        path_obj: Path = Path(path)
-        if not path_obj.exists():
-            raise FileNotFoundError(f"Tesseract executable not found at: {path}")
-
-        self._ensure_section('Paths')
-        self.config['Paths']['tesseract_path'] = str(path_obj)
-        self.save_config()
-
     def set_input_mode(self, is_append: bool) -> None:
-        """入力モード（追記/上書き）の設定を保存する"""
         self._ensure_section('WindowSettings')
         self.config['WindowSettings']['append_mode'] = str(is_append)
         self.save_config()
