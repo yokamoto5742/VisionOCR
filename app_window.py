@@ -42,8 +42,8 @@ def create_buttons(parent: tk.Frame, buttons: List[ButtonConfig]) -> None:
 class OCRApplication:
     def __init__(self) -> None:
         self.root = tk.Tk()
-        self.root.title("VisionOCR")
         self.config_manager = ConfigManager()
+        self.root.title(self.config_manager.config.get('WindowSettings', 'app_title', fallback='VisionOCR'))
         self.is_append_mode = self.config_manager.get_input_mode()
         self._initialize_application()
 

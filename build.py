@@ -8,9 +8,9 @@ def build_executable():
 
     subprocess.run([
         "pyinstaller",
-        "--name=TesseractLite",
+        "--name=VisionOCR",
         "--windowed",
-        "--icon=assets/TesseractLite.ico",
+        "--icon=assets/VisionOCR.ico",
         "--add-data", "config.ini:.",
         "main.py"
     ])
