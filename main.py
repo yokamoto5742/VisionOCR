@@ -1,7 +1,7 @@
 from app_window import OCRApplication
 
-VERSION = "1.0.2"
-LAST_UPDATED = "2024/11/07"
+VERSION = "1.0.1"
+LAST_UPDATED = "2024/11/11"
 
 def main():
     app = OCRApplication()
