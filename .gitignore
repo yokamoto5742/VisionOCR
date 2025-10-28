@@ -1,55 +1,11 @@
-# IDE - JetBrains
-.idea/
-*.iml
-*.iws
-*.ipr
-
-# Python
-__pycache__/
-*.py[cod]
-*$py.class
-*.so
-.Python
 build/
-develop-eggs/
 dist/
-downloads/
-eggs/
-.eggs/
-lib/
-lib64/
-parts/
-sdist/
-var/
-wheels/
-*.egg-info/
-.installed.cfg
-*.egg
-
-# Virtual Environment
-venv/
-.venv/
-env/
-ENV/
-
-# IDE - VSCode
-.vscode/
-*.code-workspace
-
-# OS
-.DS_Store
-Thumbs.db
-
-# Logs
-*.log
 logs/
+.idea/
 
-# Coverage
-.coverage
-.coverage.*
-htmlcov/
-
-# Misc
 .env
-.env.local
-.DS_Store
+.coverage
+*.spec
+*.iml
+
+error_log.txt
