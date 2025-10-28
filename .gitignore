@@ -8,5 +8,7 @@ logs/
 *.spec
 *.iml
 
+AICommit.xml
+VisionOCR.iml
 misc.xml
 error_log.txt
