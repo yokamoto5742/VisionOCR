@@ -1,5 +1,11 @@
-# SessionEnd Hook - Shows notification when Claude Code session ends
-# This script runs when the session is terminated
+#Requires -Version 5.0
+Set-StrictMode -Version Latest
+$ErrorActionPreference = 'Continue'
 
-Add-Type -AssemblyName System.Windows.Forms
-[System.Windows.Forms.MessageBox]::Show("Claude Code セッションが終了しました", 'Claude Code', 'OK', 'Information')
+try {
+    Add-Type -AssemblyName System.Windows.Forms -ErrorAction Stop
+    [System.Windows.Forms.MessageBox]::Show("Claude Code セッションが終了しました", 'Claude Code', [System.Windows.Forms.MessageBoxButtons]::OK, [System.Windows.Forms.MessageBoxIcon]::Information) | Out-Null
+}
+catch {
+    Write-Output "Hook failed: $_"
+}
