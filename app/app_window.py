@@ -3,10 +3,10 @@ from typing import Tuple, Optional, List, Callable
 import tkinter as tk
 from tkinter import scrolledtext, TclError, messagebox
 
-from config_manager import ConfigManager
-from app_screen_capture import ScreenCapture
-import service_text
-from service_file import save_text_to_file
+from utils.config_manager import ConfigManager
+from app.app_screen_capture import ScreenCapture
+from service import service_text
+from service.service_file import save_text_to_file
 
 
 @dataclass

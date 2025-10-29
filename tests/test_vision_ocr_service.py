@@ -1,9 +1,12 @@
+import io
+
 import pytest
 from unittest.mock import Mock, patch
-from PIL import Image
-import io
+
 from google.cloud import vision
-from vision_ocr_service import VisionOCRService
+from PIL import Image
+
+from service.vision_ocr_service import VisionOCRService
 
 
 @pytest.fixture

@@ -1,4 +1,4 @@
-from app_window import OCRApplication
+from app.app_window import OCRApplication
 
 def main():
     app = OCRApplication()

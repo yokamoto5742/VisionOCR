@@ -1,10 +1,12 @@
 import tkinter as tk
 from tkinter import messagebox
+
 import pyautogui
 from PIL import Image
 from typing import Optional, Tuple
-from config_manager import ConfigManager
-from vision_ocr_service import VisionOCRService
+
+from utils.config_manager import ConfigManager
+from service.vision_ocr_service import VisionOCRService
 
 
 class ScreenCapture:

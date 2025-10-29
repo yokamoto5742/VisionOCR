@@ -1,9 +1,11 @@
 import pytest
 from unittest.mock import Mock, patch, MagicMock
 import tkinter as tk
-from PIL import Image
+
 import pyautogui
-from app_screen_capture import ScreenCapture
+from PIL import Image
+
+from app.app_screen_capture import ScreenCapture
 
 
 @pytest.fixture
@@ -37,7 +39,7 @@ def screen_capture(mock_tk, mock_config_manager, mock_vision_ocr, mock_canvas):
 
 @pytest.fixture
 def mock_config_manager():
-    with patch('app_screen_capture.ConfigManager') as mock:
+    with patch('app.app_screen_capture.ConfigManager') as mock:
         config_instance = mock.return_value
         config_instance.get_screen_capture_settings.return_value = (0.3, 2)
         yield config_instance
@@ -45,7 +47,7 @@ def mock_config_manager():
 
 @pytest.fixture
 def mock_vision_ocr():
-    with patch('app_screen_capture.VisionOCRService') as mock:
+    with patch('app.app_screen_capture.VisionOCRService') as mock:
         ocr_instance = mock.return_value
         ocr_instance.perform_ocr.return_value = "テスト文字列"
         yield ocr_instance

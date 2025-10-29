@@ -1,9 +1,10 @@
-import pytest
-from unittest.mock import Mock
-import tkinter as tk
 from typing import Any
 
-import service_text
+import pytest
+import tkinter as tk
+from unittest.mock import Mock
+
+from service import service_text
 
 
 @pytest.fixture

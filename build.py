@@ -1,5 +1,6 @@
 import subprocess
-from version_manager import update_version, update_main_py
+
+from scripts.version_manager import update_version, update_main_py
 
 
 def build_executable():
@@ -11,7 +12,7 @@ def build_executable():
         "--name=VisionOCR",
         "--windowed",
         "--icon=assets/VisionOCR.ico",
-        "--add-data", "config.ini:.",
+        "--add-data", "utils/config.ini:utils",
         "main.py"
     ])
 

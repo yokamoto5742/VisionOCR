@@ -1,9 +1,11 @@
-from typing import Optional
-from pathlib import Path
-from PIL import Image
 import io
+from pathlib import Path
+from typing import Optional
+
 from google.cloud import vision
-from config_manager import ConfigManager
+from PIL import Image
+
+from utils.config_manager import ConfigManager
 
 class VisionOCRService:
     def __init__(self):

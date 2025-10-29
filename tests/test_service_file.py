@@ -1,9 +1,11 @@
 import re
+from datetime import datetime
+from pathlib import Path
+
 import pytest
 from unittest.mock import patch, MagicMock
-from pathlib import Path
-from datetime import datetime
-import service_file
+
+from service import service_file
 
 
 @pytest.fixture

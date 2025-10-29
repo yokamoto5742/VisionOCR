@@ -1,6 +1,7 @@
 import pytest
 from unittest.mock import Mock, patch
-from main import VERSION, LAST_UPDATED
+
+from app import __version__ as VERSION, __date__ as LAST_UPDATED
 
 
 def test_version_format():
@@ -13,8 +14,8 @@ def test_version_format():
 
 def test_last_updated_format():
     """LAST_UPDATEDが正しい日付形式であることを確認するテスト"""
-    # 日付が YYYY/MM/DD の形式になっているか確認
-    date_parts = LAST_UPDATED.split('/')
+    # 日付が YYYY-MM-DD の形式になっているか確認
+    date_parts = LAST_UPDATED.split('-')
     assert len(date_parts) == 3
     assert len(date_parts[0]) == 4  # 年は4桁
     assert len(date_parts[1]) == 2  # 月は2桁

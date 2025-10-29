@@ -2,12 +2,13 @@ import pytest
 from unittest.mock import Mock, patch, MagicMock
 import tkinter as tk
 from tkinter import TclError
-from app_window import OCRApplication, ButtonConfig
+
+from app.app_window import OCRApplication, ButtonConfig
 
 
 @pytest.fixture
 def mock_config_manager():
-    with patch('app_window.ConfigManager') as mock:
+    with patch('app.app_window.ConfigManager') as mock:
         instance = mock.return_value
         instance.get_input_mode.return_value = False
         instance.get_window_geometry.return_value = [100, 100, 900, 700]
@@ -48,7 +49,7 @@ def mock_text_widget():
 def app(mock_config_manager, mock_text_widget):
     with patch('tkinter.Tk') as mock_tk, \
             patch('tkinter.scrolledtext.ScrolledText', return_value=mock_text_widget), \
-            patch('app_window.ScreenCapture') as mock_screen_capture:
+            patch('app.app_window.ScreenCapture') as mock_screen_capture:
         # Tkインスタンスの設定
         mock_tk_instance = mock_tk.return_value
         mock_tk_instance.clipboard_get = MagicMock()
@@ -116,6 +117,6 @@ def test_save_to_file(app):
     test_text = "保存するテキスト"
     app.text_area._content = test_text
 
-    with patch('app_window.save_text_to_file') as mock_save:
+    with patch('app.app_window.save_text_to_file') as mock_save:
         app.save_to_file()
         mock_save.assert_called_once_with(test_text)
