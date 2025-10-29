@@ -6,11 +6,13 @@ from google.cloud import vision
 from PIL import Image
 
 from utils.config_manager import ConfigManager
+from utils.env_loader import get_google_credentials
 
 class VisionOCRService:
     def __init__(self):
         try:
-            self.client = vision.ImageAnnotatorClient()
+            credentials = get_google_credentials()
+            self.client = vision.ImageAnnotatorClient.from_service_account_info(credentials)
         except Exception as e:
             raise RuntimeError(f"Vision APIクライアントの初期化に失敗しました: {e}")
 
