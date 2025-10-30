@@ -41,8 +41,8 @@ VisionOCR is a desktop application that uses Google Cloud Vision API to extract 
 - **app/app_window.py**: Main GUI (`OCRApplication` class) - manages the Tkinter window, text display area, and all user interactions. Uses append/overwrite mode toggle for OCR results.
 - **app/app_screen_capture.py**: Screen capture functionality (`ScreenCapture` class) - handles region selection via mouse drag
 - **service/vision_ocr_service.py**: Google Cloud Vision API integration (`VisionOCRService` class) - performs actual OCR processing
-- **service/service_text.py**: Text manipulation utilities - removes punctuation, line breaks, and spaces
-- **service/service_file.py**: File I/O operations for saving OCR results
+- **service/text_widget_utils.py**: Text widget utilities - operations on tkinter Text widgets
+- **service/file_saver.py**: File saving operations with dialog for OCR text results
 - **utils/config_manager.py**: Configuration management - reads from config.ini (uses resource_path for PyInstaller compatibility)
 
 ### Entry Point
@@ -89,8 +89,8 @@ Uses `ConfigManager` class which provides `resource_path()` to locate config.ini
 ### Service Layer
 Services are separated by concern:
 - `VisionOCRService`: External API integration
-- `service_text`: Pure text transformations
-- `service_file`: File system operations
+- `text_widget_utils`: Text widget operations
+- `file_saver`: File saving with dialog
 
 ### GUI State Management
 `OCRApplication` maintains `is_append_mode` boolean to toggle between append/overwrite modes for OCR results. Mode button updates its text dynamically.

@@ -3,8 +3,8 @@ from tkinter import TclError, messagebox, scrolledtext
 from typing import List
 
 from app.app_screen_capture import ScreenCapture
-from service import service_text
-from service.service_file import save_text_to_file
+from service import text_widget_utils
+from service.file_saver import save_text_to_file
 from utils.config_manager import ConfigManager
 from utils.constants import TextPosition, UILayout
 from widgets.button_factory import ButtonConfig, create_buttons
@@ -91,10 +91,10 @@ class OCRApplication:
         bottom_frame.pack(fill=tk.X, padx=UILayout.FRAME_PADDING, pady=UILayout.FRAME_PADDING)
 
         bottom_buttons: List[ButtonConfig] = [
-            ButtonConfig("読点除去", lambda: service_text.remove_punctuation(self.text_area, '、')),
-            ButtonConfig("句点除去", lambda: service_text.remove_punctuation(self.text_area, '。')),
-            ButtonConfig("改行除去", lambda: service_text.remove_linebreaks(self.text_area)),
-            ButtonConfig("スペース除去", lambda: service_text.remove_spaces(self.text_area)),
+            ButtonConfig("読点除去", lambda: text_widget_utils.remove_punctuation(self.text_area, '、')),
+            ButtonConfig("句点除去", lambda: text_widget_utils.remove_punctuation(self.text_area, '。')),
+            ButtonConfig("改行除去", lambda: text_widget_utils.remove_linebreaks(self.text_area)),
+            ButtonConfig("スペース除去", lambda: text_widget_utils.remove_spaces(self.text_area)),
             ButtonConfig("閉じる", self.root.quit)
         ]
 

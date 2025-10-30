@@ -65,8 +65,8 @@ python main.py
 - `app_window.py`: メインウィンドウのGUI実装
 - `app_screen_capture.py`: 画面キャプチャ機能の実装
 - `vision_ocr_service.py`: Google Cloud Vision APIとの連携
-- `service_text.py`: テキスト処理機能の実装
-- `service_file.py`: ファイル保存機能の実装
+- `text_widget_utils.py`: テキストウィジェット操作機能の実装
+- `file_saver.py`: ファイル保存ダイアログ機能の実装
 - `config_manager.py`: アプリケーション設定の管理
 
 ## エラー処理
