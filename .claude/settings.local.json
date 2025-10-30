@@ -58,30 +58,33 @@
   "hooks": {
     "Stop": [
       {
+        "matcher": "*",
         "hooks": [
           {
             "type": "command",
-            "command": "powershell -ExecutionPolicy Bypass -File \"$CLAUDE_PROJECT_DIR/.claude/hooks/Stop.ps1\""
+            "command": "powershell -Command \"Add-Type -AssemblyName System.Windows.Forms; [System.Windows.Forms.MessageBox]::Show('作業が完了しました', 'Claude Code', 'OK', 'Information')\""
           }
         ]
       }
     ],
     "SubagentStop": [
       {
+        "matcher": "*",
         "hooks": [
           {
             "type": "command",
-            "command": "powershell -ExecutionPolicy Bypass -File \"$CLAUDE_PROJECT_DIR/.claude/hooks/Stop.ps1\""
+            "command": "powershell -Command \"Add-Type -AssemblyName System.Windows.Forms; [System.Windows.Forms.MessageBox]::Show('サブエージェントの作業が完了しました', 'Claude Code', 'OK', 'Information')\""
           }
         ]
       }
     ],
     "SessionEnd": [
       {
+        "matcher": "*",
         "hooks": [
           {
             "type": "command",
-            "command": "powershell -ExecutionPolicy Bypass -File \"$CLAUDE_PROJECT_DIR/.claude/hooks/SessionEnd.ps1\""
+            "command": "powershell -Command \"Add-Type -AssemblyName System.Windows.Forms; [System.Windows.Forms.MessageBox]::Show('Claude Code セッションが終了しました', 'Claude Code', 'OK', 'Information')\""
           }
         ]
       }

@@ -1,11 +1,5 @@
-#Requires -Version 5.0
-Set-StrictMode -Version Latest
-$ErrorActionPreference = 'Continue'
+# Stop Hook - Shows notification when user stops Claude Code
+# This script runs when the user manually stops the session
 
-try {
-    Add-Type -AssemblyName System.Windows.Forms -ErrorAction Stop
-    [System.Windows.Forms.MessageBox]::Show("作業が完了しました", 'Claude Code', [System.Windows.Forms.MessageBoxButtons]::OK, [System.Windows.Forms.MessageBoxIcon]::Information) | Out-Null
-}
-catch {
-    Write-Output "Hook failed: $_"
-}
+Add-Type -AssemblyName System.Windows.Forms
+[System.Windows.Forms.MessageBox]::Show("Stop作業が完了しました", 'Claude Code', 'OK', 'Information')
