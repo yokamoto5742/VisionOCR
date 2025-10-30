@@ -2,6 +2,7 @@ build/
 dist/
 logs/
 .idea/
+.serena/
 
 .env
 .coverage
