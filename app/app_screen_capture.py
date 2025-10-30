@@ -1,6 +1,6 @@
 import tkinter as tk
 from tkinter import messagebox
-from typing import Optional, Tuple
+from typing import Any, Optional, Tuple
 
 import pyautogui
 
@@ -98,28 +98,74 @@ class ScreenCapture:
 
         return left, top, right, bottom
 
+    def _validate_screenshot_bounds(self, bounds: Optional[Tuple[int, int, int, int]]) -> bool:
+        """スクリーンショット境界を検証
+
+        Args:
+            bounds: スクリーンショット境界 (left, top, right, bottom)
+
+        Returns:
+            bool: 境界が有効な場合True、そうでない場合False
+        """
+        if bounds is None:
+            messagebox.showwarning('OCR結果', 'スクリーンショットの範囲が小さすぎます。')
+            return False
+        return True
+
+    def _capture_screenshot(self, bounds: Tuple[int, int, int, int]) -> Any:
+        """スクリーンショットをキャプチャ
+
+        Args:
+            bounds: スクリーンショット境界 (left, top, right, bottom)
+
+        Returns:
+            キャプチャされたスクリーンショット画像
+        """
+        left, top, right, bottom = bounds
+        return pyautogui.screenshot(region=(left, top, right - left, bottom - top))
+
+    def _extract_text_from_screenshot(self, screenshot: Any) -> Optional[str]:
+        """スクリーンショットからテキストを抽出
+
+        Args:
+            screenshot: スクリーンショット画像
+
+        Returns:
+            Optional[str]: 抽出されたテキスト、失敗時はNone
+        """
+        try:
+            text = self.ocr_service.perform_ocr(screenshot)
+            if not text.strip():
+                messagebox.showwarning('OCR結果', 'テキストを検出できませんでした。')
+                return None
+            return text
+        except Exception as ocr_error:
+            messagebox.showerror('OCRエラー', f'テキスト認識中にエラーが発生しました: {str(ocr_error)}')
+            return None
+
+    def _copy_text_to_clipboard(self, text: str) -> None:
+        """テキストをクリップボードにコピー
+
+        Args:
+            text: コピーするテキスト
+        """
+        self.root.clipboard_clear()
+        self.root.clipboard_append(text)
+
     def _process_screenshot(self) -> None:
+        """スクリーンショットを処理してテキストを抽出"""
         try:
             bounds = self._get_screenshot_bounds()
-            if bounds is None:
-                messagebox.showwarning('OCR結果', 'スクリーンショットの範囲が小さすぎます。')
+
+            if not self._validate_screenshot_bounds(bounds):
                 self.root.quit()
                 return
 
-            left, top, right, bottom = bounds
-            screenshot = pyautogui.screenshot(region=(left, top, right - left, bottom - top))
+            screenshot = self._capture_screenshot(bounds)
+            text = self._extract_text_from_screenshot(screenshot)
 
-            try:
-                text = self.ocr_service.perform_ocr(screenshot)
-                if not text.strip():
-                    messagebox.showwarning('OCR結果', 'テキストを検出できませんでした。')
-                    return
-
-                self.root.clipboard_clear()
-                self.root.clipboard_append(text)
-
-            except Exception as ocr_error:
-                messagebox.showerror('OCRエラー', f'テキスト認識中にエラーが発生しました: {str(ocr_error)}')
+            if text is not None:
+                self._copy_text_to_clipboard(text)
 
         except Exception as e:
             messagebox.showerror('キャプチャエラー', f'スクリーンショット処理中にエラーが発生しました: {str(e)}')
