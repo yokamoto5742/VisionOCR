@@ -1,10 +1,3 @@
-"""設定ファイル管理モジュール
-
-このモジュールは、config.iniファイルの読み書きを管理します。
-設定の取得、保存、検証を行う機能を提供します。
-"""
-
-# 標準ライブラリ
 import configparser
 import os
 import sys
