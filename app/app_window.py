@@ -1,12 +1,12 @@
-from dataclasses import dataclass
-from typing import Tuple, Optional, List, Callable
 import tkinter as tk
-from tkinter import scrolledtext, TclError, messagebox
+from dataclasses import dataclass
+from tkinter import TclError, messagebox, scrolledtext
+from typing import Callable, List, Optional, Tuple
 
-from utils.config_manager import ConfigManager
 from app.app_screen_capture import ScreenCapture
 from service import service_text
 from service.service_file import save_text_to_file
+from utils.config_manager import ConfigManager
 
 
 @dataclass
