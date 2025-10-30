@@ -3,7 +3,6 @@ from tkinter import messagebox
 from typing import Optional, Tuple
 
 import pyautogui
-from PIL import Image
 
 from service.vision_ocr_service import VisionOCRService
 from utils.config_manager import ConfigManager

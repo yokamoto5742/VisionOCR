@@ -1,7 +1,7 @@
 import tkinter as tk
 from dataclasses import dataclass
 from tkinter import TclError, messagebox, scrolledtext
-from typing import Callable, List, Optional, Tuple
+from typing import Callable, List
 
 from app.app_screen_capture import ScreenCapture
 from service import service_text
