@@ -2,7 +2,7 @@ import configparser
 import os
 import sys
 from pathlib import Path
-from typing import Final, List, Tuple, Optional
+from typing import Final, List, Tuple
 
 
 def get_config_path() -> Path:

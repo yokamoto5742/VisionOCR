@@ -22,12 +22,7 @@ def setup_logging(config: configparser.ConfigParser):
     parent_dir_name = os.path.basename(os.path.dirname(os.path.dirname(log_directory)))
     log_file = os.path.join(log_directory, f'{parent_dir_name}.log')
 
-    file_handler = TimedRotatingFileHandler(
-        filename=log_file,
-        when='midnight',
-        interval=1,
-        backupCount=log_retention_days
-    )
+    file_handler = TimedRotatingFileHandler(filename=log_file, when='midnight', backupCount=log_retention_days)
     file_handler.suffix = "%Y-%m-%d.log"
 
     logging.basicConfig(
