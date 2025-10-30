@@ -6,6 +6,7 @@ from app.app_screen_capture import ScreenCapture
 from service import service_text
 from service.service_file import save_text_to_file
 from utils.config_manager import ConfigManager
+from utils.constants import TextPosition, UILayout
 from widgets.button_factory import ButtonConfig, create_buttons
 
 
@@ -47,7 +48,7 @@ class OCRApplication:
 
     def _create_top_buttons(self) -> None:
         button_frame = tk.Frame(self.root)
-        button_frame.pack(fill=tk.X, padx=5, pady=5)
+        button_frame.pack(fill=tk.X, padx=UILayout.FRAME_PADDING, pady=UILayout.FRAME_PADDING)
 
         top_buttons: List[ButtonConfig] = [
             ButtonConfig("OCR範囲選択", self.capture_screen, is_highlight=True),
@@ -64,7 +65,7 @@ class OCRApplication:
             text=f"{mode_text}モード",
             command=self.toggle_input_mode
         )
-        self.mode_button.pack(side=tk.LEFT, padx=2)
+        self.mode_button.pack(side=tk.LEFT, padx=UILayout.BUTTON_PADDING)
 
     def _create_text_area(self) -> None:
         try:
@@ -80,14 +81,14 @@ class OCRApplication:
                 wrap=tk.WORD,
                 font=(font_family, font_size)
             )
-            self.text_area.pack(expand=True, fill='both', padx=5, pady=5)
+            self.text_area.pack(expand=True, fill='both', padx=UILayout.FRAME_PADDING, pady=UILayout.FRAME_PADDING)
         except Exception as e:
             messagebox.showerror("エラー", f"テキストエリアの作成に失敗: {str(e)}")
             raise
 
     def _create_bottom_buttons(self) -> None:
         bottom_frame = tk.Frame(self.root)
-        bottom_frame.pack(fill=tk.X, padx=5, pady=5)
+        bottom_frame.pack(fill=tk.X, padx=UILayout.FRAME_PADDING, pady=UILayout.FRAME_PADDING)
 
         bottom_buttons: List[ButtonConfig] = [
             ButtonConfig("読点除去", lambda: service_text.remove_punctuation(self.text_area, '、')),
@@ -110,10 +111,10 @@ class OCRApplication:
                 text = self.root.clipboard_get()
                 if text:
                     if not self.is_append_mode:
-                        self.text_area.delete(1.0, tk.END)
-                    elif self.text_area.get(1.0, tk.END).strip():
-                        self.text_area.insert(tk.END, "\n")
-                    self.text_area.insert(tk.END, text)
+                        self.text_area.delete(TextPosition.START, TextPosition.END)
+                    elif self.text_area.get(TextPosition.START, TextPosition.END).strip():
+                        self.text_area.insert(TextPosition.END, "\n")
+                    self.text_area.insert(TextPosition.END, text)
             except tk.TclError:
                 pass # _process_screenshot でエラー処理済み
 
@@ -122,7 +123,7 @@ class OCRApplication:
 
     def copy_to_clipboard(self) -> None:
         try:
-            text = self.text_area.get(1.0, tk.END).strip()
+            text = self.text_area.get(TextPosition.START, TextPosition.END).strip()
             if not text:
                 messagebox.showwarning("警告", "コピーするテキストがありません。")
                 return
@@ -141,7 +142,7 @@ class OCRApplication:
 
     def save_to_file(self) -> None:
         try:
-            text = self.text_area.get(1.0, tk.END).strip()
+            text = self.text_area.get(TextPosition.START, TextPosition.END).strip()
             if text:
                 save_text_to_file(text)
         except Exception as e:
@@ -149,6 +150,6 @@ class OCRApplication:
 
     def clear_screen(self) -> None:
         try:
-            self.text_area.delete(1.0, tk.END)
+            self.text_area.delete(TextPosition.START, TextPosition.END)
         except TclError as e:
             messagebox.showerror("エラー", f"画面のクリアに失敗: {str(e)}")

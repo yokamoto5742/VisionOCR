@@ -4,23 +4,30 @@ from pathlib import Path
 from tkinter import filedialog, messagebox
 from typing import Optional
 
+from utils.constants import (
+    DATETIME_FORMAT,
+    DEFAULT_ENCODING,
+    DEFAULT_FILE_EXTENSION,
+    DEFAULT_FILE_PREFIX,
+)
+
 
 def get_save_file_path() -> Optional[str]:
     downloads_path = Path.home() / "Downloads"
     initial_dir = str(downloads_path if downloads_path.exists() else Path.cwd())
-    current_time = datetime.now().strftime('%Y%m%d_%H%M%S')
-    default_filename = f'OCR_result_{current_time}.txt'
+    current_time = datetime.now().strftime(DATETIME_FORMAT)
+    default_filename = f'{DEFAULT_FILE_PREFIX}{current_time}{DEFAULT_FILE_EXTENSION}'
 
     return filedialog.asksaveasfilename(
         initialfile=default_filename,
         initialdir=initial_dir,
-        defaultextension='.txt',
-        filetypes=[('テキストファイル', '*.txt'), ('すべてのファイル', '*.*')]
+        defaultextension=DEFAULT_FILE_EXTENSION,
+        filetypes=[('テキストファイル', f'*{DEFAULT_FILE_EXTENSION}'), ('すべてのファイル', '*.*')]
     )
 
 
 def write_text_to_file(file_path: str, text: str) -> None:
-    with open(file_path, 'w', encoding='utf-8') as f:
+    with open(file_path, 'w', encoding=DEFAULT_ENCODING) as f:
         f.write(text)
 
 

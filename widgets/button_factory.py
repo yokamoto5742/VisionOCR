@@ -2,6 +2,8 @@ import tkinter as tk
 from dataclasses import dataclass
 from typing import Callable, List
 
+from utils.constants import UIColors, UILayout
+
 
 @dataclass
 class ButtonConfig:
@@ -21,14 +23,14 @@ def create_buttons(parent: tk.Frame, buttons: List[ButtonConfig]) -> None:
 
         if btn_config.is_highlight:
             button.configure(
-                background='#007bff',  # 青色の背景
-                foreground='white',  # 白色のテキスト
-                font=('Helvetica', 10, 'bold'),  # 太字フォント
-                relief=tk.RAISED,  # 浮き出た表示
-                borderwidth=3  # より太いボーダー
+                background=UIColors.HIGHLIGHT_PRIMARY,
+                foreground=UIColors.HIGHLIGHT_TEXT,
+                font=UILayout.HIGHLIGHT_FONT,
+                relief=tk.RAISED,
+                borderwidth=UILayout.HIGHLIGHT_BORDER_WIDTH
             )
 
-            button.bind('<Enter>', lambda e, b=button: b.configure(background='#0056b3'))
-            button.bind('<Leave>', lambda e, b=button: b.configure(background='#007bff'))
+            button.bind('<Enter>', lambda e, b=button: b.configure(background=UIColors.HIGHLIGHT_HOVER))
+            button.bind('<Leave>', lambda e, b=button: b.configure(background=UIColors.HIGHLIGHT_PRIMARY))
 
-        button.pack(side=tk.LEFT, padx=2)
+        button.pack(side=tk.LEFT, padx=UILayout.BUTTON_PADDING)

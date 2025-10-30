@@ -6,6 +6,7 @@ import pyautogui
 
 from service.vision_ocr_service import VisionOCRService
 from utils.config_manager import ConfigManager
+from utils.constants import MIN_SCREENSHOT_SIZE, UIColors
 
 
 class ScreenCapture:
@@ -70,7 +71,7 @@ class ScreenCapture:
         self.selection_rect = self.canvas.create_rectangle(
             self.start_x, self.start_y,
             curr_x, curr_y,
-            outline='red',
+            outline=UIColors.SELECTION_OUTLINE,
             width=self.outline_width
         )
 
@@ -93,7 +94,7 @@ class ScreenCapture:
         right = max(self.start_x, self.end_x)
         bottom = max(self.start_y, self.end_y)
 
-        if right - left < 5 or bottom - top < 5:
+        if right - left < MIN_SCREENSHOT_SIZE or bottom - top < MIN_SCREENSHOT_SIZE:
             return None
 
         return left, top, right, bottom
