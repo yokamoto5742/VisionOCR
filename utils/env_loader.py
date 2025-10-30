@@ -4,8 +4,25 @@ from typing import Dict
 
 from dotenv import load_dotenv
 
+REQUIRED_CREDENTIAL_FIELDS = [
+    "type",
+    "project_id",
+    "private_key_id",
+    "private_key",
+    "client_email",
+    "client_id",
+    "auth_uri",
+    "token_uri"
+]
 
-def load_environment_variables():
+OPTIONAL_CREDENTIAL_FIELDS = {
+    "auth_provider_x509_cert_url": None,
+    "client_x509_cert_url": None,
+    "universe_domain": "googleapis.com"
+}
+
+def load_environment_variables() -> None:
+    """環境変数を.envファイルから読み込み"""
     base_dir = Path(__file__).parent.parent
     env_path = os.path.join(base_dir, '.env')
 
@@ -17,9 +34,17 @@ def load_environment_variables():
 
 
 def get_google_credentials() -> Dict[str, str]:
-    """Google Cloud認証情報を.envから取得"""
+    """Google Cloud認証情報を.envから取得して検証
+
+    Returns:
+        Dict[str, str]: 認証情報の辞書
+
+    Raises:
+        ValueError: 必須フィールドが不足している場合
+    """
     load_environment_variables()
 
+    # 認証情報を取得
     credentials = {
         "type": os.getenv("TYPE"),
         "project_id": os.getenv("PROJECT_ID"),
@@ -31,10 +56,41 @@ def get_google_credentials() -> Dict[str, str]:
         "token_uri": os.getenv("TOKEN_URI"),
         "auth_provider_x509_cert_url": os.getenv("AUTH_PROVIDER_X509_CERT_URL"),
         "client_x509_cert_url": os.getenv("CLIENT_X509_CERT_URL"),
-        "universe_domain": os.getenv("UNIVERSE_DOMAIN")
+        "universe_domain": os.getenv("UNIVERSE_DOMAIN", "googleapis.com")
     }
 
-    if not credentials["project_id"]:
-        raise ValueError(".envファイルにPROJECT_IDが設定されていません")
+    # 必須フィールドの検証
+    missing_fields = [
+        field for field in REQUIRED_CREDENTIAL_FIELDS
+        if not credentials.get(field)
+    ]
+
+    if missing_fields:
+        raise ValueError(
+            f".envファイルに以下の必須フィールドが設定されていません: "
+            f"{', '.join(missing_fields)}"
+        )
 
     return credentials
+
+
+def validate_credentials(credentials: Dict[str, str]) -> bool:
+    """認証情報の妥当性を検証
+
+    Args:
+        credentials: 検証する認証情報
+
+    Returns:
+        bool: 妥当な場合True
+    """
+    # 基本的な検証
+    if not credentials.get("project_id"):
+        return False
+
+    if not credentials.get("private_key"):
+        return False
+
+    if not "@" in credentials.get("client_email", ""):
+        return False
+
+    return True
