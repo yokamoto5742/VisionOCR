@@ -1,10 +1,3 @@
-"""テキストウィジェット操作ユーティリティ
-
-このモジュールは、tkinterのTextウィジェットに対する
-共通操作を提供します。すべての関数は適切なエラーハンドリングを行います。
-"""
-
-# 標準ライブラリ
 import tkinter as tk
 from functools import wraps
 from typing import Any, Callable, TypeVar
