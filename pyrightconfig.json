@@ -4,6 +4,6 @@
   "include": ["app","service","utils","widgets"],
   "exclude": ["tests", "scripts"],
   "reportMissingTypeStubs": false,
-  "reportUnusedVariables": true,
-  "reportUnusedImports": true
+  "reportUnusedVariable": true,
+  "reportUnusedImport": true
 }

@@ -1,11 +1,8 @@
 import io
-from pathlib import Path
-from typing import Any, Optional
 
 from google.cloud import vision
 from PIL import Image
 
-from utils.config_manager import ConfigManager
 from utils.env_loader import get_google_credentials
 
 class VisionOCRService:
