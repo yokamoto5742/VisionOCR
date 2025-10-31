@@ -7,6 +7,7 @@ from utils.constants import UIColors, UILayout
 
 @dataclass
 class ButtonConfig:
+    """ボタンの設定を保持するデータクラス"""
     text: str
     command: Callable[[], None]
     is_highlight: bool = False

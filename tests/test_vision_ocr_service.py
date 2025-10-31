@@ -11,12 +11,15 @@ from service.vision_ocr_service import VisionOCRService
 
 @pytest.fixture
 def mock_vision_client():
-    with patch('google.cloud.vision.ImageAnnotatorClient') as mock_client:
+    with patch('service.vision_ocr_service.vision.ImageAnnotatorClient') as mock_client:
         yield mock_client
 
 
 @pytest.fixture
 def vision_service(mock_vision_client):
+    # from_service_account_infoの戻り値を設定
+    mock_instance = Mock()
+    mock_vision_client.from_service_account_info.return_value = mock_instance
     return VisionOCRService()
 
 
@@ -29,13 +32,17 @@ def sample_image():
 def test_successful_ocr(vision_service, mock_vision_client, sample_image):
     # モックレスポンスの設定
     mock_response = Mock()
-    mock_response.error.message = ""
+    # errorオブジェクトのmessageを空文字列に設定（Falsy）
+    mock_error = Mock()
+    mock_error.message = ""
+    mock_response.error = mock_error
+
     mock_annotation = Mock()
     mock_annotation.description = "テストテキスト"
     mock_response.text_annotations = [mock_annotation]
 
     # クライアントのtext_detectionメソッドの戻り値を設定
-    instance = mock_vision_client.return_value
+    instance = mock_vision_client.from_service_account_info.return_value
     instance.text_detection.return_value = mock_response
 
     # OCR実行
@@ -49,9 +56,11 @@ def test_successful_ocr(vision_service, mock_vision_client, sample_image):
 def test_api_error(vision_service, mock_vision_client, sample_image):
     # エラーレスポンスの設定
     mock_response = Mock()
-    mock_response.error.message = "API エラー"
+    mock_error = Mock()
+    mock_error.message = "API エラー"
+    mock_response.error = mock_error
 
-    instance = mock_vision_client.return_value
+    instance = mock_vision_client.from_service_account_info.return_value
     instance.text_detection.return_value = mock_response
 
     # エラーが発生することを確認
@@ -64,10 +73,13 @@ def test_api_error(vision_service, mock_vision_client, sample_image):
 def test_no_text_detected(vision_service, mock_vision_client, sample_image):
     # テキストが検出されないケース
     mock_response = Mock()
-    mock_response.error.message = ""
+    # errorオブジェクトのmessageを空文字列に設定（Falsy）
+    mock_error = Mock()
+    mock_error.message = ""
+    mock_response.error = mock_error
     mock_response.text_annotations = []
 
-    instance = mock_vision_client.return_value
+    instance = mock_vision_client.from_service_account_info.return_value
     instance.text_detection.return_value = mock_response
 
     with pytest.raises(RuntimeError) as exc_info:
@@ -79,12 +91,16 @@ def test_no_text_detected(vision_service, mock_vision_client, sample_image):
 def test_empty_text_detected(vision_service, mock_vision_client, sample_image):
     # 空のテキストが検出されるケース
     mock_response = Mock()
-    mock_response.error.message = ""
+    # errorオブジェクトのmessageを空文字列に設定（Falsy）
+    mock_error = Mock()
+    mock_error.message = ""
+    mock_response.error = mock_error
+
     mock_annotation = Mock()
     mock_annotation.description = "   "  # 空白文字のみ
     mock_response.text_annotations = [mock_annotation]
 
-    instance = mock_vision_client.return_value
+    instance = mock_vision_client.from_service_account_info.return_value
     instance.text_detection.return_value = mock_response
 
     with pytest.raises(RuntimeError) as exc_info:
@@ -95,7 +111,7 @@ def test_empty_text_detected(vision_service, mock_vision_client, sample_image):
 
 def test_client_initialization_error():
     # クライアント初期化エラーのテスト
-    with patch('google.cloud.vision.ImageAnnotatorClient', side_effect=Exception("初期化エラー")):
+    with patch('service.vision_ocr_service.vision.ImageAnnotatorClient.from_service_account_info', side_effect=Exception("初期化エラー")):
         with pytest.raises(RuntimeError) as exc_info:
             VisionOCRService()
 

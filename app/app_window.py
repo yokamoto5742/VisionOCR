@@ -11,6 +11,8 @@ from widgets.button_factory import ButtonConfig, create_buttons
 
 
 class OCRApplication:
+    """Google Cloud Vision APIを使用したOCRアプリケーションのメインGUI"""
+
     def __init__(self) -> None:
         self.root = tk.Tk()
         self.config_manager = ConfigManager()
@@ -41,6 +43,7 @@ class OCRApplication:
         self._create_bottom_buttons()
 
     def toggle_input_mode(self) -> None:
+        """OCR結果の入力モードを追記と上書きで切り替え"""
         self.is_append_mode = not self.is_append_mode
         self.config_manager.set_input_mode(self.is_append_mode)  # 設定を保存
         mode_text = "追記" if self.is_append_mode else "上書き"
@@ -101,6 +104,7 @@ class OCRApplication:
         create_buttons(bottom_frame, bottom_buttons)
 
     def capture_screen(self) -> None:
+        """画面の一部をキャプチャしてOCR処理を実行"""
         try:
             self.root.iconify()
             screen_capture = ScreenCapture()

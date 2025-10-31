@@ -6,6 +6,8 @@ from PIL import Image
 from utils.env_loader import get_google_credentials
 
 class VisionOCRService:
+    """Google Cloud Vision APIを使用したOCR処理サービス"""
+
     def __init__(self) -> None:
         try:
             credentials = get_google_credentials()
@@ -14,6 +16,7 @@ class VisionOCRService:
             raise RuntimeError(f"Vision APIクライアントの初期化に失敗しました: {e}")
 
     def perform_ocr(self, image: Image.Image) -> str:
+        """画像からテキストを抽出"""
         try:
             img_byte_arr = io.BytesIO()
             image.save(img_byte_arr, format=image.format or 'PNG')

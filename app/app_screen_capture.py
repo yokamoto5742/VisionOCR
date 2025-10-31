@@ -10,6 +10,8 @@ from utils.constants import MIN_SCREENSHOT_SIZE, UIColors
 
 
 class ScreenCapture:
+    """画面の矩形領域を選択してOCR処理を行うキャプチャUI"""
+
     def __init__(self) -> None:
         self.root: tk.Tk = tk.Tk()
         self.root.clipboard_clear()
@@ -87,6 +89,7 @@ class ScreenCapture:
         self.root.quit()
 
     def _get_screenshot_bounds(self) -> Optional[Tuple[int, int, int, int]]:
+        """ユーザーが選択した矩形領域の座標を計算"""
         if any(coord is None for coord in [self.start_x, self.start_y, self.end_x, self.end_y]):
             raise ValueError("スクリーンショットの座標が正しく設定されていません")
 

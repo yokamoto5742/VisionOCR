@@ -6,6 +6,7 @@ from logging.handlers import TimedRotatingFileHandler
 
 
 def load_config() -> configparser.ConfigParser:
+    """config.iniファイルを読み込み"""
     config = configparser.ConfigParser()
     config_path = os.path.join(os.path.dirname(__file__), 'config.ini')
     config.read(config_path)
@@ -13,6 +14,7 @@ def load_config() -> configparser.ConfigParser:
 
 
 def setup_logging(config: configparser.ConfigParser):
+    """ログのローテーション設定を初期化"""
     log_directory = os.path.join(os.path.dirname(__file__), config.get('LOGGING', 'log_directory', fallback='logs'))
     log_retention_days = config.getint('LOGGING', 'log_retention_days', fallback=7)
 
@@ -35,6 +37,7 @@ def setup_logging(config: configparser.ConfigParser):
 
 
 def cleanup_old_logs(log_directory: str, retention_days: int):
+    """保持期間を過ぎた古いログファイルを削除"""
     now = datetime.now()
     parent_dir_name = os.path.basename(os.path.dirname(os.path.dirname(log_directory)))
     main_log_file = f'{parent_dir_name}.log'

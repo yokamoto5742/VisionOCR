@@ -155,10 +155,10 @@ def test_remove_linebreaks_error(error_mock_widget: Mock) -> None:
 def test_get_text_content_error(error_mock_widget: Mock) -> None:
     with pytest.raises(ValueError) as exc_info:
         text_widget_utils.get_text_content(error_mock_widget)
-    assert "テキストウィジェットの読み取りに失敗しました" in str(exc_info.value)
+    assert "テキストウィジェットの操作に失敗しました" in str(exc_info.value)
 
 
 def test_set_text_content_error(error_mock_widget: Mock) -> None:
     with pytest.raises(ValueError) as exc_info:
         text_widget_utils.set_text_content(error_mock_widget, "テスト")
-    assert "テキストウィジェットの書き込みに失敗しました" in str(exc_info.value)
+    assert "テキストウィジェットの操作に失敗しました" in str(exc_info.value)

@@ -13,6 +13,7 @@ from utils.constants import (
 
 
 def get_save_file_path() -> Optional[str]:
+    """ファイル保存ダイアログを表示してパスを取得"""
     downloads_path = Path.home() / "Downloads"
     initial_dir = str(downloads_path if downloads_path.exists() else Path.cwd())
     current_time = datetime.now().strftime(DATETIME_FORMAT)
@@ -27,6 +28,7 @@ def get_save_file_path() -> Optional[str]:
 
 
 def write_text_to_file(file_path: str, text: str) -> None:
+    """テキストをファイルに書き込み"""
     with open(file_path, 'w', encoding=DEFAULT_ENCODING) as f:
         f.write(text)
 
@@ -41,6 +43,7 @@ def open_saved_directory(file_path: str) -> None:
 
 
 def save_text_to_file(text: str) -> bool:
+    """テキストをファイルに保存し、保存先フォルダを開く"""
     file_path = get_save_file_path()
     if not file_path:
         return False
