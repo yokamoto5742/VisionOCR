@@ -1,6 +1,6 @@
 import io
 from pathlib import Path
-from typing import Optional
+from typing import Any, Optional
 
 from google.cloud import vision
 from PIL import Image
@@ -9,7 +9,7 @@ from utils.config_manager import ConfigManager
 from utils.env_loader import get_google_credentials
 
 class VisionOCRService:
-    def __init__(self):
+    def __init__(self) -> None:
         try:
             credentials = get_google_credentials()
             self.client = vision.ImageAnnotatorClient.from_service_account_info(credentials)
@@ -24,7 +24,7 @@ class VisionOCRService:
 
             vision_image = vision.Image(content=content)
 
-            response = self.client.text_detection(image=vision_image)
+            response = self.client.text_detection(image=vision_image)  # type: ignore[attr-defined]
 
             if response.error.message:
                 raise RuntimeError(

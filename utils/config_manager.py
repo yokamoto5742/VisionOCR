@@ -15,17 +15,16 @@ class ConfigError(Exception):
 
 def get_config_path() -> Path:
     """設定ファイルのパスを取得
-    
+
     PyInstallerでビルドされた実行ファイルの場合は、
     一時ディレクトリ（sys._MEIPASS）から設定ファイルを読み込みます。
     それ以外の場合は、このファイルと同じディレクトリから読み込みます。
-    
+
     Returns:
         Path: 設定ファイルのパス
     """
     base_path: Path = Path(
-        sys._MEIPASS if getattr(sys, 'frozen', False) 
-        else os.path.dirname(__file__)
+        getattr(sys, '_MEIPASS', os.path.dirname(__file__))  # type: ignore[attr-defined]
     )
     return base_path / 'config.ini'
 

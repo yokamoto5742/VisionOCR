@@ -7,37 +7,37 @@
 # 標準ライブラリ
 import tkinter as tk
 from functools import wraps
-from typing import Callable, TypeVar
+from typing import Any, Callable, TypeVar
 
 # 型変数の定義
-F = TypeVar('F', bound=Callable)
+F = TypeVar('F', bound=Callable[..., Any])
 
 
 def safe_text_operation(func: F) -> F:
     """テキストウィジェット操作の安全なラッパー
-    
+
     TclErrorとその他の例外を適切に処理するデコレータです。
     すべてのテキストウィジェット操作関数に適用されます。
-    
+
     Args:
         func: ラップする関数
-        
+
     Returns:
         F: ラップされた関数
-        
+
     Raises:
         ValueError: TclError が発生した場合
         RuntimeError: その他の予期しないエラーが発生した場合
     """
     @wraps(func)
-    def wrapper(*args, **kwargs):
+    def wrapper(*args: Any, **kwargs: Any) -> Any:
         try:
             return func(*args, **kwargs)
         except tk.TclError as e:
             raise ValueError(f"テキストウィジェットの操作に失敗しました: {e}")
         except Exception as e:
             raise RuntimeError(f"予期せぬエラーが発生しました: {e}")
-    return wrapper
+    return wrapper  # type: ignore[return-value]
 
 
 @safe_text_operation

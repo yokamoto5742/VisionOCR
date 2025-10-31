@@ -68,12 +68,13 @@ class ScreenCapture:
         if self.selection_rect:
             self.canvas.delete(self.selection_rect)
 
-        self.selection_rect = self.canvas.create_rectangle(
-            self.start_x, self.start_y,
-            curr_x, curr_y,
-            outline=UIColors.SELECTION_OUTLINE,
-            width=self.outline_width
-        )
+        if self.start_x is not None and self.start_y is not None:
+            self.selection_rect = self.canvas.create_rectangle(
+                self.start_x, self.start_y,
+                curr_x, curr_y,
+                outline=UIColors.SELECTION_OUTLINE,
+                width=self.outline_width
+            )
 
     def _on_release(self, event: tk.Event) -> None:
         self.end_x = event.x
@@ -88,6 +89,9 @@ class ScreenCapture:
     def _get_screenshot_bounds(self) -> Optional[Tuple[int, int, int, int]]:
         if any(coord is None for coord in [self.start_x, self.start_y, self.end_x, self.end_y]):
             raise ValueError("スクリーンショットの座標が正しく設定されていません")
+
+        assert self.start_x is not None and self.end_x is not None
+        assert self.start_y is not None and self.end_y is not None
 
         left = min(self.start_x, self.end_x)
         top = min(self.start_y, self.end_y)
@@ -162,11 +166,12 @@ class ScreenCapture:
                 self.root.quit()
                 return
 
-            screenshot = self._capture_screenshot(bounds)
-            text = self._extract_text_from_screenshot(screenshot)
+            if bounds is not None:
+                screenshot = self._capture_screenshot(bounds)
+                text = self._extract_text_from_screenshot(screenshot)
 
-            if text is not None:
-                self._copy_text_to_clipboard(text)
+                if text is not None:
+                    self._copy_text_to_clipboard(text)
 
         except Exception as e:
             messagebox.showerror('キャプチャエラー', f'スクリーンショット処理中にエラーが発生しました: {str(e)}')
