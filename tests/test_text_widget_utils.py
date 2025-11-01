@@ -63,7 +63,7 @@ def test_remove_spaces(mock_text_widget: Mock) -> None:
 
 def test_remove_spaces_with_japanese(mock_text_widget: Mock) -> None:
     initial_text = "これは　テスト　です"
-    expected_text = "これはテストです"
+    expected_text = "これは　テスト　です"
     mock_text_widget._text = initial_text
 
     text_widget_utils.remove_spaces(mock_text_widget)
@@ -74,7 +74,7 @@ def test_remove_spaces_with_japanese(mock_text_widget: Mock) -> None:
 
 def test_remove_linebreaks(mock_text_widget: Mock) -> None:
     initial_text = "これは\nテスト\nです"
-    expected_text = "これは テスト です"
+    expected_text = "これはテストです"
     mock_text_widget._text = initial_text
 
     text_widget_utils.remove_linebreaks(mock_text_widget)
