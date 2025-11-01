@@ -6,7 +6,7 @@ from PIL import Image
 from utils.env_loader import get_google_credentials
 
 class VisionOCRService:
-    """Google Cloud Vision APIを使用したOCR処理サービス"""
+    """Google Cloud Vision APIを使用したOCR処理"""
 
     def __init__(self) -> None:
         try:
