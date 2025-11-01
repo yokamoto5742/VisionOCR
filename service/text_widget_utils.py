@@ -1,27 +1,13 @@
 import tkinter as tk
+import re
 from functools import wraps
 from typing import Any, Callable, TypeVar
 
-# 型変数の定義
 F = TypeVar('F', bound=Callable[..., Any])
 
 
 def safe_text_operation(func: F) -> F:
-    """テキストウィジェット操作の安全なラッパー
-
-    TclErrorとその他の例外を適切に処理するデコレータです。
-    すべてのテキストウィジェット操作関数に適用されます。
-
-    Args:
-        func: ラップする関数
-
-    Returns:
-        F: ラップされた関数
-
-    Raises:
-        ValueError: TclError が発生した場合
-        RuntimeError: その他の予期しないエラーが発生した場合
-    """
+    """テキストウィジェット操作の安全なラッパー"""
     @wraps(func)
     def wrapper(*args: Any, **kwargs: Any) -> Any:
         try:
@@ -30,7 +16,7 @@ def safe_text_operation(func: F) -> F:
             raise ValueError(f"テキストウィジェットの操作に失敗しました: {e}")
         except Exception as e:
             raise RuntimeError(f"予期せぬエラーが発生しました: {e}")
-    return wrapper  # type: ignore[return-value]
+    return wrapper
 
 
 @safe_text_operation
@@ -53,27 +39,24 @@ def remove_punctuation(text_widget: tk.Text, punct: str) -> None:
 
 @safe_text_operation
 def remove_spaces(text_widget: tk.Text) -> None:
-    """すべての空白文字（スペース、タブ、改行）を削除
-    
+    """スペースとタブを削除
+
     Args:
         text_widget: 対象のテキストウィジェット
-        
+
     Raises:
         ValueError: テキストウィジェットの操作に失敗した場合
         RuntimeError: 予期しないエラーが発生した場合
     """
     text = text_widget.get('1.0', tk.END)
-    modified_text = ''.join(text.split())
+    modified_text = re.sub(r'[ \t]', '', text)
     text_widget.delete('1.0', tk.END)
     text_widget.insert(tk.END, modified_text)
 
 
 @safe_text_operation
 def remove_linebreaks(text_widget: tk.Text) -> None:
-    """改行を空白に置換
-    
-    複数行のテキストを1行にまとめます。
-    各行の間には空白が挿入されます。
+    """複数行のテキストを1行にまとめる
     
     Args:
         text_widget: 対象のテキストウィジェット
@@ -83,7 +66,7 @@ def remove_linebreaks(text_widget: tk.Text) -> None:
         RuntimeError: 予期しないエラーが発生した場合
     """
     text = text_widget.get('1.0', tk.END).strip()
-    modified_text = ' '.join(text.splitlines())
+    modified_text = ''.join(text.splitlines())
     text_widget.delete('1.0', tk.END)
     text_widget.insert(tk.END, modified_text)
 
@@ -131,15 +114,7 @@ def set_text_content(
 
 @safe_text_operation
 def clear_text(text_widget: tk.Text) -> None:
-    """テキストウィジェットの内容をクリア
-    
-    Args:
-        text_widget: 対象のテキストウィジェット
-        
-    Raises:
-        ValueError: テキストウィジェットの操作に失敗した場合
-        RuntimeError: 予期しないエラーが発生した場合
-    """
+    """テキストウィジェットの内容をクリア"""
     text_widget.delete('1.0', tk.END)
 
 
@@ -151,7 +126,7 @@ def insert_text(text_widget: tk.Text, text: str, position: str = tk.END) -> None
         text_widget: 対象のテキストウィジェット
         text: 挿入するテキスト
         position: 挿入位置（デフォルト: 末尾）
-        
+
     Raises:
         ValueError: テキストウィジェットの操作に失敗した場合
         RuntimeError: 予期しないエラーが発生した場合
