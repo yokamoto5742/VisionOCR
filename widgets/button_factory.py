@@ -14,7 +14,7 @@ class ButtonConfig:
 
 
 def create_buttons(parent: tk.Frame, buttons: List[ButtonConfig]) -> None:
-    """ボタンリストからボタンウィジェットを作成してparentに配置する"""
+    """ボタンリストからボタンウィジェットを作成して配置する"""
     for btn_config in buttons:
         button = tk.Button(
             parent,
