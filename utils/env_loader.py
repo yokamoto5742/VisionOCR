@@ -44,7 +44,6 @@ def get_google_credentials() -> Dict[str, str]:
     """
     load_environment_variables()
 
-    # 認証情報を取得
     credentials = {
         "type": os.getenv("TYPE"),
         "project_id": os.getenv("PROJECT_ID"),
@@ -59,7 +58,6 @@ def get_google_credentials() -> Dict[str, str]:
         "universe_domain": os.getenv("UNIVERSE_DOMAIN", "googleapis.com")
     }
 
-    # 必須フィールドの検証
     missing_fields = [
         field for field in REQUIRED_CREDENTIAL_FIELDS
         if not credentials.get(field)
@@ -83,7 +81,6 @@ def validate_credentials(credentials: Dict[str, str]) -> bool:
     Returns:
         bool: 妥当な場合True
     """
-    # 基本的な検証
     if not credentials.get("project_id"):
         return False
 

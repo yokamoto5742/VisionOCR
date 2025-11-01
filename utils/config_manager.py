@@ -8,7 +8,7 @@ from typing import Final, List, Tuple
 class ConfigError(Exception):
     """設定ファイル関連のエラー
     
-    設定ファイルの読み込み、書き込み、検証時に発生するエラーを表します。
+    設定ファイルの読み込み、書き込み、検証時に発生するエラーを表示
     """
     pass
 
@@ -16,15 +16,14 @@ class ConfigError(Exception):
 def get_config_path() -> Path:
     """設定ファイルのパスを取得
 
-    PyInstallerでビルドされた実行ファイルの場合は、
-    一時ディレクトリ（sys._MEIPASS）から設定ファイルを読み込みます。
-    それ以外の場合は、このファイルと同じディレクトリから読み込みます。
+    PyInstallerでビルドされた実行ファイルの場合は一時ディレクトリ（sys._MEIPASS）から設定ファイルを読み込む
+    それ以外の場合はこのファイルと同じディレクトリから読み込む
 
     Returns:
         Path: 設定ファイルのパス
     """
     base_path: Path = Path(
-        getattr(sys, '_MEIPASS', os.path.dirname(__file__))  # type: ignore[attr-defined]
+        getattr(sys, '_MEIPASS', os.path.dirname(__file__))
     )
     return base_path / 'config.ini'
 
@@ -35,7 +34,7 @@ CONFIG_PATH: Final[Path] = get_config_path()
 class ConfigManager:
     """設定管理クラス
     
-    config.iniファイルの読み書きと設定値の管理を行います。
+    config.iniファイルの読み書きと設定値の管理を行う
     
     Attributes:
         config_file (Path): 設定ファイルのパス
@@ -43,24 +42,12 @@ class ConfigManager:
     """
     
     def __init__(self, config_file: Path | str = CONFIG_PATH) -> None:
-        """ConfigManagerを初期化
-        
-        Args:
-            config_file: 設定ファイルのパス（デフォルト: CONFIG_PATH）
-        """
         self.config_file: Path = Path(config_file)
         self.config: configparser.ConfigParser = configparser.ConfigParser()
         self.load_config()
 
     def load_config(self) -> None:
-        """設定ファイルを読み込む
-        
-        UTF-8エンコーディングで読み込みを試み、失敗した場合は
-        CP932エンコーディングでリトライします。
-        
-        Raises:
-            ConfigError: 設定ファイルの読み込みに失敗した場合
-        """
+        """設定ファイルを読み込む"""
         if not self.config_file.exists():
             return
 
@@ -68,18 +55,13 @@ class ConfigManager:
             self.config.read(self.config_file, encoding='utf-8')
         except UnicodeDecodeError:
             try:
-                # UTF-8以外のエンコーディングで試行
                 content: str = self.config_file.read_bytes().decode('cp932')
                 self.config.read_string(content)
             except (UnicodeDecodeError, OSError) as e:
                 raise ConfigError(f"Failed to load config: {e}") from e
 
     def save_config(self) -> None:
-        """設定をファイルに保存
-        
-        Raises:
-            ConfigError: 設定ファイルの保存に失敗した場合
-        """
+        """設定ファイルを保存"""
         try:
             with open(self.config_file, 'w', encoding='utf-8') as configfile:
                 self.config.write(configfile)
@@ -106,11 +88,7 @@ class ConfigManager:
             raise ConfigError(f"Invalid window geometry format: {e}") from e
 
     def get_font_size(self) -> int:
-        """フォントサイズを取得
-        
-        Returns:
-            int: フォントサイズ（デフォルト: 12）
-        """
+        """フォントサイズを取得"""
         return self.config.getint('WindowSettings', 'font_size', fallback=12)
 
     def get_screen_capture_settings(self) -> Tuple[float, int]:
@@ -146,14 +124,7 @@ class ConfigManager:
         return self.config.getboolean('WindowSettings', 'append_mode', fallback=True)
 
     def set_window_geometry(self, x: int, y: int, width: int, height: int) -> None:
-        """ウィンドウのジオメトリ設定を保存
-        
-        Args:
-            x: X座標
-            y: Y座標
-            width: 幅
-            height: 高さ
-        """
+        """ウィンドウのジオメトリ設定を保存"""
         self._ensure_section('WindowSettings')
         self.config['WindowSettings']['geometry'] = f"{x},{y},{width},{height}"
         self.save_config()
@@ -168,7 +139,7 @@ class ConfigManager:
             ValueError: サイズが0以下の場合
         """
         if size <= 0:
-            raise ValueError("Font size must be positive")
+            raise ValueError("フォントサイズは正の値で指定してください")
         self._ensure_section('WindowSettings')
         self.config['WindowSettings']['font_size'] = str(size)
         self.save_config()
@@ -184,9 +155,9 @@ class ConfigManager:
             ValueError: 設定値が範囲外の場合
         """
         if not 0 <= transparency <= 1:
-            raise ValueError("Transparency must be between 0 and 1")
+            raise ValueError("透明度は0から1の間の値で指定してください")
         if outline_width <= 0:
-            raise ValueError("Outline width must be positive")
+            raise ValueError("枠線の幅は正の値で指定してください")
 
         self._ensure_section('ScreenCapture')
         self.config['ScreenCapture']['transparency'] = str(transparency)
@@ -204,10 +175,6 @@ class ConfigManager:
         self.save_config()
 
     def _ensure_section(self, section: str) -> None:
-        """設定セクションが存在することを確認し、必要に応じて作成
-        
-        Args:
-            section: セクション名
-        """
+        """設定セクションが存在することを確認し、必要に応じて作成"""
         if section not in self.config:
             self.config[section] = {}

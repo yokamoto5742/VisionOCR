@@ -13,10 +13,7 @@ MIN_SCREENSHOT_SIZE = 5
 
 
 class UIColors:
-    """UI配色定数
-    
-    アプリケーションで使用する色を定義します。
-    """
+    """UI配色定数"""
     HIGHLIGHT_PRIMARY = '#007bff'
     HIGHLIGHT_HOVER = '#0056b3'
     HIGHLIGHT_TEXT = 'white'
@@ -24,10 +21,7 @@ class UIColors:
 
 
 class UILayout:
-    """UIレイアウト定数
-    
-    ボタンやフレームのレイアウトに関する定数を定義します。
-    """
+    """UIレイアウト定数"""
     BUTTON_PADDING = 2
     FRAME_PADDING = 5
     HIGHLIGHT_FONT = ('Helvetica', 10, 'bold')
@@ -51,7 +45,3 @@ DATETIME_FORMAT = '%Y%m%d_%H%M%S'
 # エンコーディング設定
 DEFAULT_ENCODING = 'utf-8'
 FALLBACK_ENCODING = 'cp932'
-
-# ログ設定
-DEFAULT_LOG_DIRECTORY = 'logs'
-DEFAULT_LOG_RETENTION_DAYS = 7
