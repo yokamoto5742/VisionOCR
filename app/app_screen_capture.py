@@ -10,7 +10,7 @@ from utils.constants import MIN_SCREENSHOT_SIZE, UIColors
 
 
 class ScreenCapture:
-    """画面の矩形領域を選択してOCR処理を行うキャプチャUI"""
+    """画面の矩形領域を選択してOCR処理を行う"""
 
     def __init__(self) -> None:
         self.root: tk.Tk = tk.Tk()

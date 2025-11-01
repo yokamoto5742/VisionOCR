@@ -11,7 +11,7 @@ from widgets.button_factory import ButtonConfig, create_buttons
 
 
 class OCRApplication:
-    """Google Cloud Vision APIを使用したOCRアプリケーションのメインGUI"""
+    """Google Cloud Vision APIを使用したOCRアプリケーション"""
 
     def __init__(self) -> None:
         self.root = tk.Tk()
