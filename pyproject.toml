@@ -1,0 +1,36 @@
+[project]
+name = "visionocr"
+version = "1.0.0"
+requires-python = ">=3.13"
+
+dependencies = [
+    "google-cloud-vision>=3.11.0",
+    "pillow>=12.0.0",
+    "pyautogui>=0.9.54",
+    "python-dotenv>=1.2.1",
+    "requests>=2.32.5",
+]
+
+[dependency-groups]
+dev = [
+    "coverage>=7.9.2",
+    "pyinstaller>=6.11.0",
+    "pyright>=1.1.409",
+    "pytest>=8.4.1",
+    "pytest-cov>=6.2.1",
+    "pytest-mock>=3.14.1",
+    "ruff>=0.15.14",
+]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = "test_*.py"
+
+[tool.pyright]
+typeCheckingMode = "standard"
+pythonVersion = "3.13"
+include = ["app", "service", "utils", "tests"]
+exclude = ["scripts"]
+reportMissingTypeStubs = false
+reportUnusedVariable = true
+reportUnusedImport = true
