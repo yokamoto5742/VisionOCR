@@ -17,7 +17,7 @@ VisionOCRは、Google Cloud Vision APIを使用して画面上の任意の領域
 ## 必要要件
 
 ### 開発環境
-- Python 3.10以上
+- Python 3.13以上
 - Google Cloud Vision API のサービスアカウント認証情報
 
 ### 実行環境
@@ -109,43 +109,6 @@ python main.py
 3. 認識されたテキストで「読点除去」「改行除去」等を実行
 4. 結果をクリップボードコピーまたはファイル保存
 
-## プロジェクト構成
-
-```
-VisionOCR/
-├── app/                          # アプリケーションコア
-│   ├── app_window.py            # メインGUIウィンドウ (OCRApplication)
-│   ├── app_screen_capture.py    # 画面キャプチャ機能 (ScreenCapture)
-│   └── __init__.py              # バージョン定義
-├── service/                      # ビジネスロジック層
-│   ├── vision_ocr_service.py    # Google Vision API統合 (VisionOCRService)
-│   ├── text_widget_utils.py     # Tkinterテキストウィジェット操作
-│   └── file_saver.py            # ファイル保存ダイアログ
-├── utils/                        # ユーティリティ層
-│   ├── config_manager.py        # 設定ファイル管理 (ConfigManager)
-│   ├── env_loader.py            # 環境変数ロード
-│   ├── constants.py             # 定数定義
-│   ├── exceptions.py            # カスタム例外
-│   └── config.ini               # アプリケーション設定ファイル
-├── tests/                        # テストスイート
-│   ├── test_app_window.py
-│   ├── test_app_screen_capture.py
-│   ├── test_vision_ocr_service.py
-│   ├── test_service_text.py
-│   └── test_service_file.py
-├── assets/                       # リソース
-│   ├── VisionOCR.ico            # アプリケーションアイコン
-│   └── VisionOCR.png            # ロゴ画像
-├── docs/                         # ドキュメント
-│   ├── README.md                # このファイル
-│   ├── CHANGELOG.md             # 変更ログ
-│   └── LICENSE                  # ライセンス
-├── main.py                       # アプリケーション起動エントリーポイント
-├── build.py                      # 実行ファイルビルドスクリプト
-├── requirements.txt              # Python依存パッケージ
-└── .env                          # 環境変数（認証情報）※リポジトリ外で管理
-```
-
 ## アーキテクチャ
 
 ### アーキテクチャパターン
@@ -215,10 +178,6 @@ pytest --cov=app --cov=service --cov=utils
 pytest tests/test_app_window.py
 ```
 
-### バージョン管理
-**現在のバージョン**: 1.1.1
-**最終更新日**: 2025年11月1日
-
 ## トラブルシューティング
 
 ### Google Cloud Vision APIエラー
@@ -253,13 +212,17 @@ pytest tests/test_app_window.py
 2. 依存パッケージが正しくインストールされていることを確認: `pip list | grep google-cloud-vision`
 3. 仮想環境が有効化されていることを確認: Windows環境では`.venv\Scripts\activate`を実行
 
-## ライセンス
-
-このプロジェクトのライセンスについては、`docs/LICENSE`を参照してください。
-
 ## 注意事項
 
 - Google Cloud Vision APIの利用には料金が発生する可能性があります。詳細は[Google Cloud Vision pricing](https://cloud.google.com/vision/pricing)を参照してください
 - 大量の画像処理には時間がかかる場合があります。APIリクエストのレート制限に注意してください
 - `.env`ファイルには秘密情報が含まれます。リポジトリにコミットしないでください
 - 画像品質、文字の大きさ、コントラストによってOCR精度が変動します
+
+## ライセンス
+
+このプロジェクトのライセンス情報については、 [LICENSE](docs/LICENSE) を参照してください。
+
+## 更新履歴
+
+更新履歴は [CHANGELOG.md](docs/CHANGELOG.md) を参照してください。
