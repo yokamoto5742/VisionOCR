@@ -176,6 +176,26 @@ class OCRApplication:
         except Exception as e:
             messagebox.showerror("エラー", f"ファイルの保存に失敗: {str(e)}")
 
+    def select_pdf_files(self) -> None:
+        """PDFファイルを選択してOCR処理を実行"""
+        pdf_paths = filedialog.askopenfilenames(
+            title="PDFファイルを選択",
+            filetypes=[("PDFファイル", "*.pdf")],
+        )
+        if not pdf_paths:
+            return
+
+        try:
+            ocr_service = VisionOCRService()
+            text = process_pdf_files(list(pdf_paths), ocr_service)
+            if not self.is_append_mode:
+                self.text_area.delete(TextPosition.START, TextPosition.END)
+            elif self.text_area.get(TextPosition.START, TextPosition.END).strip():
+                self.text_area.insert(TextPosition.END, "\n")
+            self.text_area.insert(TextPosition.END, text)
+        except Exception as e:
+            messagebox.showerror("エラー", f"PDF処理中にエラーが発生しました: {str(e)}")
+
     def clear_screen(self) -> None:
         try:
             self.text_area.delete(TextPosition.START, TextPosition.END)
