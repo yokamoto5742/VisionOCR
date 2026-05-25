@@ -2,7 +2,7 @@ import configparser
 import os
 import sys
 from pathlib import Path
-from typing import Any, Final, List, Tuple
+from typing import Final, List, Tuple
 
 
 class ConfigError(Exception):
@@ -190,24 +190,3 @@ class ConfigManager:
         """設定セクションが存在することを確認し、必要に応じて作成"""
         if section not in self.config:
             self.config[section] = {}
-
-
-def load_config() -> configparser.ConfigParser:
-    """設定ファイルを読み込んでConfigParserを返す"""
-    config = configparser.ConfigParser()
-    config_path = get_config_path()
-    if config_path.exists():
-        config.read(config_path, encoding="utf-8")
-    return config
-
-
-def get_config_value(
-    config: configparser.ConfigParser,
-    section: str,
-    key: str,
-    default: Any = None,
-) -> Any:
-    """設定値を取得し、存在しない場合はデフォルト値を返す"""
-    if config.has_option(section, key):
-        return config.get(section, key)
-    return default

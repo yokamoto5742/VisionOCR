@@ -9,6 +9,8 @@ from utils.constants import (
     DEFAULT_ENCODING,
     DEFAULT_FILE_EXTENSION,
     DEFAULT_FILE_PREFIX,
+    UILabels,
+    UIMessages,
 )
 
 
@@ -17,24 +19,27 @@ def get_save_file_path() -> Optional[str]:
     downloads_path = Path.home() / "Downloads"
     initial_dir = str(downloads_path if downloads_path.exists() else Path.cwd())
     current_time = datetime.now().strftime(DATETIME_FORMAT)
-    default_filename = f'{DEFAULT_FILE_PREFIX}{current_time}{DEFAULT_FILE_EXTENSION}'
+    default_filename = f"{DEFAULT_FILE_PREFIX}{current_time}{DEFAULT_FILE_EXTENSION}"
 
     return filedialog.asksaveasfilename(
         initialfile=default_filename,
         initialdir=initial_dir,
         defaultextension=DEFAULT_FILE_EXTENSION,
-        filetypes=[('テキストファイル', f'*{DEFAULT_FILE_EXTENSION}'), ('すべてのファイル', '*.*')]
+        filetypes=[
+            (UILabels.TEXT_FILETYPE_LABEL, f"*{DEFAULT_FILE_EXTENSION}"),
+            (UILabels.ALL_FILETYPE_LABEL, "*.*"),
+        ],
     )
 
 
 def write_text_to_file(file_path: str, text: str) -> None:
     """テキストをファイルに書き込み"""
-    with open(file_path, 'w', encoding=DEFAULT_ENCODING) as f:
+    with open(file_path, "w", encoding=DEFAULT_ENCODING) as f:
         f.write(text)
 
 
 def show_success_message() -> None:
-    messagebox.showinfo('完了', 'テキストファイルを保存しました。')
+    messagebox.showinfo(UILabels.TITLE_INFO, UIMessages.INFO_SAVE_DONE)
 
 
 def open_saved_directory(file_path: str) -> None:
@@ -55,11 +60,15 @@ def save_text_to_file(text: str) -> bool:
         return True
 
     except PermissionError:
-        messagebox.showerror('エラー', 'ファイルへのアクセス権限がありません。')
+        messagebox.showerror(UILabels.TITLE_ERROR, UIMessages.ERR_FILE_PERMISSION)
         return False
     except OSError as e:
-        messagebox.showerror('エラー', f'ファイル操作エラー: {e}')
+        messagebox.showerror(
+            UILabels.TITLE_ERROR, UIMessages.ERR_FILE_OS.format(error=e)
+        )
         return False
     except Exception as e:
-        messagebox.showerror('エラー', f'予期せぬエラーが発生しました: {e}')
+        messagebox.showerror(
+            UILabels.TITLE_ERROR, UIMessages.ERR_UNEXPECTED_DETAIL.format(error=e)
+        )
         return False

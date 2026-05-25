@@ -8,7 +8,13 @@ from service import text_widget_utils
 from service.file_saver import save_text_to_file
 from service.pdf_processor import process_pdf_files
 from utils.config_manager import ConfigManager
-from utils.constants import TextPosition, UILayout
+from utils.constants import (
+    DEFAULT_APP_TITLE,
+    DEFAULT_FONT_FAMILY,
+    UILabels,
+    UILayout,
+    UIMessages,
+)
 from widgets.button_factory import ButtonConfig, create_buttons
 
 
@@ -20,7 +26,7 @@ class OCRApplication:
         self.config_manager = ConfigManager()
         self.root.title(
             self.config_manager.config.get(
-                "WindowSettings", "app_title", fallback="VisionOCR"
+                "WindowSettings", "app_title", fallback=DEFAULT_APP_TITLE
             )
         )
         self.is_append_mode = self.config_manager.get_input_mode()
@@ -40,7 +46,10 @@ class OCRApplication:
             position_y = geometry[1]
             self.root.geometry(f"{width}x{height}+{position_x}+{position_y}")
         except (AttributeError, IndexError) as e:
-            messagebox.showerror("エラー", f"ウィンドウ設定の読み込みに失敗: {str(e)}")
+            messagebox.showerror(
+                UILabels.TITLE_ERROR,
+                UIMessages.ERR_WINDOW_CONFIG_LOAD.format(error=str(e)),
+            )
             self.root.geometry("800x600+100+100")
 
     def _create_gui(self) -> None:
@@ -51,9 +60,12 @@ class OCRApplication:
     def toggle_input_mode(self) -> None:
         """OCR結果の入力モードを追記と上書きで切り替え"""
         self.is_append_mode = not self.is_append_mode
-        self.config_manager.set_input_mode(self.is_append_mode)  # 設定を保存
-        mode_text = "追記" if self.is_append_mode else "上書き"
-        self.mode_button.config(text=f"{mode_text}モード")
+        self.config_manager.set_input_mode(self.is_append_mode)
+        self.mode_button.config(text=self._mode_button_text())
+
+    def _mode_button_text(self) -> str:
+        mode = UILabels.MODE_APPEND if self.is_append_mode else UILabels.MODE_OVERWRITE
+        return f"{mode}{UILabels.MODE_BUTTON_SUFFIX}"
 
     def _create_top_buttons(self) -> None:
         button_frame = tk.Frame(self.root)
@@ -62,25 +74,24 @@ class OCRApplication:
         )
 
         top_buttons: List[ButtonConfig] = [
-            ButtonConfig("範囲選択", self.capture_screen, is_highlight=True),
-            ButtonConfig("ファイル選択", self.select_pdf_files),
-            ButtonConfig("全文コピー", self.copy_to_clipboard),
-            ButtonConfig("ファイル出力", self.save_to_file),
-            ButtonConfig("画面クリア", self.clear_screen),
+            ButtonConfig(UILabels.BTN_CAPTURE, self.capture_screen, is_highlight=True),
+            ButtonConfig(UILabels.BTN_SELECT_FILE, self.select_pdf_files),
+            ButtonConfig(UILabels.BTN_COPY_ALL, self.copy_to_clipboard),
+            ButtonConfig(UILabels.BTN_SAVE_FILE, self.save_to_file),
+            ButtonConfig(UILabels.BTN_CLEAR, self.clear_screen),
         ]
 
         create_buttons(button_frame, top_buttons)
 
-        mode_text = "追記" if self.is_append_mode else "上書き"
         self.mode_button = tk.Button(
-            button_frame, text=f"{mode_text}モード", command=self.toggle_input_mode
+            button_frame, text=self._mode_button_text(), command=self.toggle_input_mode
         )
         self.mode_button.pack(side=tk.LEFT, padx=UILayout.BUTTON_PADDING)
 
     def _create_text_area(self) -> None:
         try:
             font_family = self.config_manager.config.get(
-                "WindowSettings", "font_family", fallback="MS Gothic"
+                "WindowSettings", "font_family", fallback=DEFAULT_FONT_FAMILY
             )
             font_size = self.config_manager.get_font_size()
 
@@ -94,7 +105,10 @@ class OCRApplication:
                 pady=UILayout.FRAME_PADDING,
             )
         except Exception as e:
-            messagebox.showerror("エラー", f"テキストエリアの作成に失敗: {str(e)}")
+            messagebox.showerror(
+                UILabels.TITLE_ERROR,
+                UIMessages.ERR_TEXT_AREA_CREATE.format(error=str(e)),
+            )
             raise
 
     def _create_bottom_buttons(self) -> None:
@@ -105,24 +119,26 @@ class OCRApplication:
 
         bottom_buttons: List[ButtonConfig] = [
             ButtonConfig(
-                "読点除去",
+                UILabels.BTN_REMOVE_COMMA,
                 lambda: text_widget_utils.remove_punctuation(self.text_area, "、"),
             ),
             ButtonConfig(
-                "句点除去",
+                UILabels.BTN_REMOVE_PERIOD,
                 lambda: text_widget_utils.remove_punctuation(self.text_area, "。"),
             ),
             ButtonConfig(
-                "改行除去", lambda: text_widget_utils.remove_linebreaks(self.text_area)
+                UILabels.BTN_REMOVE_LINEBREAK,
+                lambda: text_widget_utils.remove_linebreaks(self.text_area),
             ),
             ButtonConfig(
-                "スペース除去", lambda: text_widget_utils.remove_spaces(self.text_area)
+                UILabels.BTN_REMOVE_SPACE,
+                lambda: text_widget_utils.remove_spaces(self.text_area),
             ),
             ButtonConfig(
-                "区切り削除",
+                UILabels.BTN_REMOVE_SEPARATOR,
                 lambda: text_widget_utils.remove_page_separators(self.text_area),
             ),
-            ButtonConfig("閉じる", self.root.quit),
+            ButtonConfig(UILabels.BTN_CLOSE, self.root.quit),
         ]
 
         create_buttons(bottom_frame, bottom_buttons)
@@ -135,56 +151,61 @@ class OCRApplication:
             screen_capture.root.mainloop()
             self.root.deiconify()
 
-            try:
-                text = self.root.clipboard_get()
-                if text:
-                    if not self.is_append_mode:
-                        self.text_area.delete(TextPosition.START, TextPosition.END)
-                    elif self.text_area.get(
-                        TextPosition.START, TextPosition.END
-                    ).strip():
-                        self.text_area.insert(TextPosition.END, "\n")
-                    self.text_area.insert(TextPosition.END, text)
-            except tk.TclError:
-                pass  # _process_screenshot でエラー処理済み
+            if screen_capture.result_text:
+                text_widget_utils.set_text_content(
+                    self.text_area,
+                    screen_capture.result_text,
+                    append=self.is_append_mode,
+                )
 
         except Exception as e:
-            messagebox.showerror("エラー", f"予期せぬエラーが発生: {str(e)}")
+            messagebox.showerror(
+                UILabels.TITLE_ERROR,
+                UIMessages.ERR_UNEXPECTED.format(error=str(e)),
+            )
 
     def copy_to_clipboard(self) -> None:
         try:
-            text = self.text_area.get(TextPosition.START, TextPosition.END).strip()
+            text = text_widget_utils.get_text_content(self.text_area)
             if not text:
-                messagebox.showwarning("警告", "コピーするテキストがありません。")
+                messagebox.showwarning(
+                    UILabels.TITLE_WARNING, UIMessages.WARN_NO_COPY_TEXT
+                )
                 return
 
             self.root.clipboard_clear()
             self.root.clipboard_append(text)
             self.root.update()
 
-            messagebox.showinfo("完了", "テキストをクリップボードにコピーしました。")
+            messagebox.showinfo(UILabels.TITLE_INFO, UIMessages.INFO_COPY_DONE)
 
         except TclError as e:
             messagebox.showerror(
-                "エラー",
-                f"Tclエラー: クリップボードへのアクセスに失敗しました。\n{str(e)}",
+                UILabels.TITLE_ERROR,
+                UIMessages.ERR_CLIPBOARD_TCL.format(error=str(e)),
             )
         except Exception as e:
-            messagebox.showerror("エラー", f"クリップボードへのコピーに失敗: {str(e)}")
+            messagebox.showerror(
+                UILabels.TITLE_ERROR,
+                UIMessages.ERR_CLIPBOARD_COPY.format(error=str(e)),
+            )
 
     def save_to_file(self) -> None:
         try:
-            text = self.text_area.get(TextPosition.START, TextPosition.END).strip()
+            text = text_widget_utils.get_text_content(self.text_area)
             if text:
                 save_text_to_file(text)
         except Exception as e:
-            messagebox.showerror("エラー", f"ファイルの保存に失敗: {str(e)}")
+            messagebox.showerror(
+                UILabels.TITLE_ERROR,
+                UIMessages.ERR_FILE_SAVE.format(error=str(e)),
+            )
 
     def select_pdf_files(self) -> None:
         """PDFファイルを選択してOCR処理を実行"""
         pdf_paths = filedialog.askopenfilenames(
-            title="PDFファイルを選択",
-            filetypes=[("PDFファイル", "*.pdf")],
+            title=UILabels.PDF_DIALOG_TITLE,
+            filetypes=[(UILabels.PDF_FILETYPE_LABEL, "*.pdf")],
         )
         if not pdf_paths:
             return
@@ -192,16 +213,20 @@ class OCRApplication:
         try:
             ocr_service = VisionOCRService()
             text = process_pdf_files(list(pdf_paths), ocr_service)
-            if not self.is_append_mode:
-                self.text_area.delete(TextPosition.START, TextPosition.END)
-            elif self.text_area.get(TextPosition.START, TextPosition.END).strip():
-                self.text_area.insert(TextPosition.END, "\n")
-            self.text_area.insert(TextPosition.END, text)
+            text_widget_utils.set_text_content(
+                self.text_area, text, append=self.is_append_mode
+            )
         except Exception as e:
-            messagebox.showerror("エラー", f"PDF処理中にエラーが発生しました: {str(e)}")
+            messagebox.showerror(
+                UILabels.TITLE_ERROR,
+                UIMessages.ERR_PDF_PROCESS.format(error=str(e)),
+            )
 
     def clear_screen(self) -> None:
         try:
-            self.text_area.delete(TextPosition.START, TextPosition.END)
+            text_widget_utils.clear_text(self.text_area)
         except TclError as e:
-            messagebox.showerror("エラー", f"画面のクリアに失敗: {str(e)}")
+            messagebox.showerror(
+                UILabels.TITLE_ERROR,
+                UIMessages.ERR_CLEAR_SCREEN.format(error=str(e)),
+            )
