@@ -41,7 +41,7 @@ class OCRApplication:
             self.root.geometry(f"{width}x{height}+{position_x}+{position_y}")
         except (AttributeError, IndexError) as e:
             messagebox.showerror("エラー", f"ウィンドウ設定の読み込みに失敗: {str(e)}")
-            self.root.geometry("800x600+100+100")  # デフォルト値
+            self.root.geometry("800x600+100+100")
 
     def _create_gui(self) -> None:
         self._create_top_buttons()
@@ -66,7 +66,7 @@ class OCRApplication:
             ButtonConfig("ファイル選択", self.select_pdf_files),
             ButtonConfig("全文コピー", self.copy_to_clipboard),
             ButtonConfig("ファイル出力", self.save_to_file),
-            ButtonConfig("クリア", self.clear_screen),
+            ButtonConfig("画面クリア", self.clear_screen),
         ]
 
         create_buttons(button_frame, top_buttons)

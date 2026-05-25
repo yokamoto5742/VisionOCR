@@ -3,7 +3,7 @@ from PIL import Image
 
 from external_service.vision_ocr_service import VisionOCRService
 
-_PAGE_HEADER = "--- ページ{page_num} ---"
+_PAGE_HEADER = "--- {page_num}ページ目 ---"
 _OCR_FAILED = "[テキストを検出できませんでした]"
 
 
