@@ -1,10 +1,12 @@
 import tkinter as tk
-from tkinter import TclError, messagebox, scrolledtext
+from tkinter import TclError, filedialog, messagebox, scrolledtext
 from typing import List
 
 from app.app_screen_capture import ScreenCapture
+from external_service.vision_ocr_service import VisionOCRService
 from service import text_widget_utils
 from service.file_saver import save_text_to_file
+from service.pdf_processor import process_pdf_files
 from utils.config_manager import ConfigManager
 from utils.constants import TextPosition, UILayout
 from widgets.button_factory import ButtonConfig, create_buttons
@@ -16,7 +18,11 @@ class OCRApplication:
     def __init__(self) -> None:
         self.root = tk.Tk()
         self.config_manager = ConfigManager()
-        self.root.title(self.config_manager.config.get('WindowSettings', 'app_title', fallback='VisionOCR'))
+        self.root.title(
+            self.config_manager.config.get(
+                "WindowSettings", "app_title", fallback="VisionOCR"
+            )
+        )
         self.is_append_mode = self.config_manager.get_input_mode()
         self._initialize_application()
 
@@ -51,54 +57,68 @@ class OCRApplication:
 
     def _create_top_buttons(self) -> None:
         button_frame = tk.Frame(self.root)
-        button_frame.pack(fill=tk.X, padx=UILayout.FRAME_PADDING, pady=UILayout.FRAME_PADDING)
+        button_frame.pack(
+            fill=tk.X, padx=UILayout.FRAME_PADDING, pady=UILayout.FRAME_PADDING
+        )
 
         top_buttons: List[ButtonConfig] = [
-            ButtonConfig("OCR範囲選択", self.capture_screen, is_highlight=True),
+            ButtonConfig("範囲選択", self.capture_screen, is_highlight=True),
+            ButtonConfig("ファイル選択", self.select_pdf_files),
             ButtonConfig("全文コピー", self.copy_to_clipboard),
             ButtonConfig("ファイル出力", self.save_to_file),
-            ButtonConfig("テキストクリア", self.clear_screen),
+            ButtonConfig("クリア", self.clear_screen),
         ]
 
         create_buttons(button_frame, top_buttons)
 
         mode_text = "追記" if self.is_append_mode else "上書き"
         self.mode_button = tk.Button(
-            button_frame,
-            text=f"{mode_text}モード",
-            command=self.toggle_input_mode
+            button_frame, text=f"{mode_text}モード", command=self.toggle_input_mode
         )
         self.mode_button.pack(side=tk.LEFT, padx=UILayout.BUTTON_PADDING)
 
     def _create_text_area(self) -> None:
         try:
             font_family = self.config_manager.config.get(
-                'WindowSettings',
-                'font_family',
-                fallback='MS Gothic'
+                "WindowSettings", "font_family", fallback="MS Gothic"
             )
             font_size = self.config_manager.get_font_size()
 
             self.text_area = scrolledtext.ScrolledText(
-                self.root,
-                wrap=tk.WORD,
-                font=(font_family, font_size)
+                self.root, wrap=tk.WORD, font=(font_family, font_size)
             )
-            self.text_area.pack(expand=True, fill='both', padx=UILayout.FRAME_PADDING, pady=UILayout.FRAME_PADDING)
+            self.text_area.pack(
+                expand=True,
+                fill="both",
+                padx=UILayout.FRAME_PADDING,
+                pady=UILayout.FRAME_PADDING,
+            )
         except Exception as e:
             messagebox.showerror("エラー", f"テキストエリアの作成に失敗: {str(e)}")
             raise
 
     def _create_bottom_buttons(self) -> None:
         bottom_frame = tk.Frame(self.root)
-        bottom_frame.pack(fill=tk.X, padx=UILayout.FRAME_PADDING, pady=UILayout.FRAME_PADDING)
+        bottom_frame.pack(
+            fill=tk.X, padx=UILayout.FRAME_PADDING, pady=UILayout.FRAME_PADDING
+        )
 
         bottom_buttons: List[ButtonConfig] = [
-            ButtonConfig("読点除去", lambda: text_widget_utils.remove_punctuation(self.text_area, '、')),
-            ButtonConfig("句点除去", lambda: text_widget_utils.remove_punctuation(self.text_area, '。')),
-            ButtonConfig("改行除去", lambda: text_widget_utils.remove_linebreaks(self.text_area)),
-            ButtonConfig("スペース除去", lambda: text_widget_utils.remove_spaces(self.text_area)),
-            ButtonConfig("閉じる", self.root.quit)
+            ButtonConfig(
+                "読点除去",
+                lambda: text_widget_utils.remove_punctuation(self.text_area, "、"),
+            ),
+            ButtonConfig(
+                "句点除去",
+                lambda: text_widget_utils.remove_punctuation(self.text_area, "。"),
+            ),
+            ButtonConfig(
+                "改行除去", lambda: text_widget_utils.remove_linebreaks(self.text_area)
+            ),
+            ButtonConfig(
+                "スペース除去", lambda: text_widget_utils.remove_spaces(self.text_area)
+            ),
+            ButtonConfig("閉じる", self.root.quit),
         ]
 
         create_buttons(bottom_frame, bottom_buttons)
@@ -116,11 +136,13 @@ class OCRApplication:
                 if text:
                     if not self.is_append_mode:
                         self.text_area.delete(TextPosition.START, TextPosition.END)
-                    elif self.text_area.get(TextPosition.START, TextPosition.END).strip():
+                    elif self.text_area.get(
+                        TextPosition.START, TextPosition.END
+                    ).strip():
                         self.text_area.insert(TextPosition.END, "\n")
                     self.text_area.insert(TextPosition.END, text)
             except tk.TclError:
-                pass # _process_screenshot でエラー処理済み
+                pass  # _process_screenshot でエラー処理済み
 
         except Exception as e:
             messagebox.showerror("エラー", f"予期せぬエラーが発生: {str(e)}")
@@ -139,10 +161,12 @@ class OCRApplication:
             messagebox.showinfo("完了", "テキストをクリップボードにコピーしました。")
 
         except TclError as e:
-            messagebox.showerror("エラー", f"Tclエラー: クリップボードへのアクセスに失敗しました。\n{str(e)}")
+            messagebox.showerror(
+                "エラー",
+                f"Tclエラー: クリップボードへのアクセスに失敗しました。\n{str(e)}",
+            )
         except Exception as e:
             messagebox.showerror("エラー", f"クリップボードへのコピーに失敗: {str(e)}")
-
 
     def save_to_file(self) -> None:
         try:

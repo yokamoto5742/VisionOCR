@@ -1,23 +1,24 @@
 import configparser
+import json
 import os
 import shutil
 import subprocess
 from pathlib import Path
 
-ENV_FILE_NAME = '.env'
+ENV_FILE_NAME = ".env"
 
 
 def _get_app_dir_name() -> str:
     config = configparser.ConfigParser()
-    config_path = Path(__file__).parent / 'config.ini'
-    with open(config_path, encoding='utf-8') as f:
+    config_path = Path(__file__).parent / "config.ini"
+    with open(config_path, encoding="utf-8") as f:
         config.read_file(f)
-    return config.get('LOGGING', 'project_name')
+    return config.get("LOGGING", "project_name")
 
 
 def _user_env_dir() -> Path:
-    appdata = os.environ.get('APPDATA')
-    base = Path(appdata) if appdata else Path.home() / 'AppData' / 'Roaming'
+    appdata = os.environ.get("APPDATA")
+    base = Path(appdata) if appdata else Path.home() / "AppData" / "Roaming"
     return base / _get_app_dir_name()
 
 
@@ -45,27 +46,37 @@ def _resolve_env_path() -> Path:
 def _open_folder_and_notify(folder: Path) -> None:
     try:
         folder.mkdir(parents=True, exist_ok=True)
-        subprocess.Popen(['explorer', str(folder)])
+        subprocess.Popen(["explorer", str(folder)])
     except OSError:
         pass
 
 
 def _parse_env_file(path: Path) -> dict[str, str]:
     env_vars: dict[str, str] = {}
-    with open(path, encoding='utf-8') as f:
+    with open(path, encoding="utf-8") as f:
         for line in f:
             line = line.strip()
-            if line and not line.startswith('#') and '=' in line:
-                key, value = line.split('=', 1)
-                env_vars[key.strip()] = value.strip().strip('"\'')
+            if line and not line.startswith("#") and "=" in line:
+                key, value = line.split("=", 1)
+                env_vars[key.strip()] = value.strip().strip("\"'")
     return env_vars
+
+
+def get_google_credentials() -> dict:
+    env_vars = load_env_variables()
+    credentials_json = env_vars.get("GOOGLE_CREDENTIALS_JSON", "")
+    if not credentials_json:
+        raise RuntimeError(".envにGOOGLE_CREDENTIALS_JSONが設定されていません")
+    return json.loads(credentials_json)
 
 
 def load_env_variables() -> dict[str, str]:
     env_path = _resolve_env_path()
     if not env_path.exists():
         folder = _user_env_dir()
-        print(f'警告: .envファイルが見つかりません。{folder} に .env を配置してください。')
+        print(
+            f"警告: .envファイルが見つかりません。{folder} に .env を配置してください。"
+        )
         _open_folder_and_notify(folder)
         return {}
     return _parse_env_file(env_path)
