@@ -1,0 +1,32 @@
+============================================================
+プロジェクト構造: VisionOCR
+パス: C:\Users\yokam\PycharmProjects\VisionOCR
+生成日時: 2026-05-25 18:32:30
+============================================================
+
+└── VisionOCR
+    ├── app
+    │   ├── app_screen_capture.py
+    │   └── app_window.py
+    ├── docs
+    │   ├── CHANGELOG.md
+    │   └── LICENSE
+    ├── external_service
+    │   └── vision_ocr_service.py
+    ├── service
+    │   ├── file_saver.py
+    │   ├── pdf_processor.py
+    │   └── text_widget_utils.py
+    ├── utils
+    │   ├── config.ini
+    │   ├── config_manager.py
+    │   ├── constants.py
+    │   └── log_rotation.py
+    ├── widgets
+    │   └── button_factory.py
+    ├── pyproject.toml
+    ├── README.md
+    ├── build.py
+    ├── CLAUDE.md
+    ├── main.py
+    └── uv.lock

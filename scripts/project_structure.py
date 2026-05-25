@@ -7,14 +7,14 @@ from datetime import datetime
 class ProjectStructureGenerator:
     def __init__(self):
         self.ignore_patterns = {
-            '__pycache__', '*.pyc', '*.pyo', '*.pyd', '.pytest_cache',
+            '__pycache__', '*.pyc', '*.pyo', '*.pyd', '.pytest_cache','__init__.py',
             '*.egg-info', 'dist', '.tox', '.coverage', 'htmlcov','.claude','.serena',
-            '.venv', 'venv', '.env', 'env', 'tests','nul','logs','assets',
+            '.venv', 'venv', '.env', 'env', 'tests','nul','logs','assets','scripts',
             '.vscode', '.idea', '*.swp', '*.swo', '*~',
             '.git', '.gitignore', '.hg', '.svn',
             '.DS_Store', 'Thumbs.db', 'desktop.ini','pytest.ini',
             'node_modules', '.npm',
-            '*.log', '*.tmp', '.cache', 'CLAUDE.md',
+            '*.log', '*.tmp', '.cache', 'CLAUDE.md','.ruff_cache',
         }
 
         self.important_files = {
