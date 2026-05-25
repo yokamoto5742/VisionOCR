@@ -4,7 +4,7 @@ from typing import Any, Optional, Tuple
 
 import pyautogui
 
-from service.vision_ocr_service import VisionOCRService
+from external_service.vision_ocr_service import VisionOCRService
 from utils.config_manager import ConfigManager
 from utils.constants import MIN_SCREENSHOT_SIZE, UIColors
 

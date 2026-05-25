@@ -26,7 +26,7 @@ VisionOCRは、Google Cloud Vision APIを使用して画面上の任意の領域
 - インターネット接続
 
 ### Pythonパッケージ依存関係
-主要な依存関係（詳細は`requirements.txt`参照）:
+主要な依存関係（詳細は`pyproject.toml`参照）:
 - `google-cloud-vision==3.11.0` - OCR処理エンジン
 - `PyAutoGUI==0.9.54` - スクリーンキャプチャ
 - `pyperclip==1.11.0` - クリップボード操作
@@ -36,37 +36,54 @@ VisionOCRは、Google Cloud Vision APIを使用して画面上の任意の領域
 
 ### 1. リポジトリをクローン
 ```bash
-git clone [repository-url]
+git clone https://github.com/yokamoto5742/VisionOCR
 cd VisionOCR
 ```
 
-### 2. 仮想環境の構築（推奨）
+### 2. 仮想環境の作成と依存パッケージのインストール
+
+事前に [uv](https://docs.astral.sh/uv/getting-started/installation/) のインストールが必要です。
+
 ```bash
-python -m venv .venv
-.\.venv\Scripts\activate
+# 仮想環境の作成とパッケージのインストールを一度に行う
+uv sync
 ```
 
-### 3. 依存パッケージのインストール
+仮想環境を有効化する：
+
 ```bash
-pip install -r requirements.txt
+# Windows (Command Prompt)
+.venv\Scripts\activate.bat
+
+# Windows (PowerShell)
+.venv\Scripts\Activate.ps1
+
+# Mac / Linux
+source .venv/bin/activate
 ```
 
-### 4. Google Cloud Vision API認証情報の設定
+### 3. Google Cloud API キーを設定
 
-プロジェクトルートに`.env`ファイルを作成し、Google Cloud Consoleから取得したサービスアカウント認証情報を配置してください：
+`.env` の`GOOGLE_CREDENTIALS_JSON` の値には、Google Cloud Console からダウンロードしたサービスアカウントキーの JSON を**1 行に変換した文字列**が必要です。
+
+#### 3-1. サービスアカウントキーを 1 行に変換
+
+Google Cloud Console からダウンロードした JSON ファイルには改行が含まれているため、`scripts/json_minifier.py` を使って 1 行に変換します。
+
+```bash
+python scripts/json_minifier.py
+```
+
+実行するとファイル選択ダイアログが開きます。Google Cloud のサービスアカウントキー JSON ファイルを選択してください。
+
+スクリプトは変換後の 1 行 JSON をタイムスタンプ付きで出力ファイル（例: `credentials_20240430_123456.json`）に保存します。出力ファイル内の JSON 文字列をコピーしてください。
+
+#### 3-2. .env ファイルを作成
 
 ```
-TYPE=service_account
-PROJECT_ID=your-project-id
-PRIVATE_KEY_ID=your-private-key-id
-PRIVATE_KEY="-----BEGIN PRIVATE KEY-----\n...\n-----END PRIVATE KEY-----\n"
-CLIENT_EMAIL=your-service-account@your-project.iam.gserviceaccount.com
-CLIENT_ID=your-client-id
-AUTH_URI=https://accounts.google.com/o/oauth2/auth
-TOKEN_URI=https://oauth2.googleapis.com/token
-AUTH_PROVIDER_X509_CERT_URL=https://www.googleapis.com/oauth2/v1/certs
-CLIENT_X509_CERT_URL=https://www.googleapis.com/robot/v1/metadata/x509/...
-UNIVERSE_DOMAIN=googleapis.com
+GOOGLE_PROJECT_ID=my-awesome-app-123456
+GOOGLE_LOCATION=asia-northeast1
+GOOGLE_CREDENTIALS_JSON={"type":"service_account","project_id":"my-awesome-app-123456","private_key_id":...}
 ```
 
 **セキュリティ上の注意**: `.env`ファイルは絶対に公開リポジトリにコミットしないでください。`.gitignore`に`.env`が含まれていることを確認してください。
