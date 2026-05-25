@@ -159,6 +159,19 @@ class ConfigManager:
         self.config["ScreenCapture"]["selection_outline_width"] = str(outline_width)
         self.save_config()
 
+    def get_detection_type(self) -> str:
+        """OCR検出タイプを取得
+
+        Returns:
+            str: 'text_detection' または 'document_text_detection'
+        """
+        value = self.config.get(
+            "VisionOCR", "detection_type", fallback="text_detection"
+        )
+        if value not in ("text_detection", "document_text_detection"):
+            return "text_detection"
+        return value
+
     def get_poppler_path(self) -> str:
         """PopplerのパスをPDF変換用に取得"""
         return self.config.get("PDF", "poppler_path", fallback="")

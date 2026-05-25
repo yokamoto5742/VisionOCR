@@ -118,6 +118,10 @@ class OCRApplication:
             ButtonConfig(
                 "スペース除去", lambda: text_widget_utils.remove_spaces(self.text_area)
             ),
+            ButtonConfig(
+                "区切り削除",
+                lambda: text_widget_utils.remove_page_separators(self.text_area),
+            ),
             ButtonConfig("閉じる", self.root.quit),
         ]
 

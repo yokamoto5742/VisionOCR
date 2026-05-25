@@ -3,13 +3,13 @@ from PIL import Image
 
 from external_service.vision_ocr_service import VisionOCRService
 
-_PAGE_HEADER = "--- {page_num}ページ目 ---"
+_PAGE_FOOTER = "--- {page_num}ページ目 ---"
 _OCR_FAILED = "[テキストを検出できませんでした]"
 
 
 def process_pdf_files(
-    pdf_paths: list[str],
-    ocr_service: VisionOCRService,
+        pdf_paths: list[str],
+        ocr_service: VisionOCRService,
 ) -> str:
     """複数PDFファイルの全ページをOCR処理してテキストを返す"""
     all_parts: list[str] = []
@@ -18,7 +18,7 @@ def process_pdf_files(
         doc = fitz.open(pdf_path)
 
         for page_num, page in enumerate(doc, 1):
-            header = _PAGE_HEADER.format(page_num=page_num)
+            footer = _PAGE_FOOTER.format(page_num=page_num)
             try:
                 pixmap = page.get_pixmap()
                 image = Image.frombytes(
@@ -27,7 +27,9 @@ def process_pdf_files(
                 text = ocr_service.perform_ocr(image)
             except Exception:
                 text = _OCR_FAILED
-            all_parts.append(f"{header}\n{text}")
+
+            # テキストの後にフッターが来るように順番を入れ替えて追加
+            all_parts.append(f"{text}\n{footer}")
 
         doc.close()
 
