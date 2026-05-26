@@ -98,8 +98,6 @@ python scripts/json_minifier.py
 #### 3-2. .env ファイルを作成
 
 ```
-GOOGLE_PROJECT_ID=my-awesome-app-123456
-GOOGLE_LOCATION=asia-northeast1
 GOOGLE_CREDENTIALS_JSON={"type":"service_account","project_id":"my-awesome-app-123456","private_key_id":...}
 ```
 
