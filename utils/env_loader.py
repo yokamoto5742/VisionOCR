@@ -3,6 +3,7 @@ import json
 import os
 import shutil
 import subprocess
+import sys
 from pathlib import Path
 
 ENV_FILE_NAME = ".env"
@@ -10,7 +11,9 @@ ENV_FILE_NAME = ".env"
 
 def _get_app_dir_name() -> str:
     config = configparser.ConfigParser()
-    config_path = Path(__file__).parent / "config.ini"
+    # PyInstallerビルド時はsys._MEIPASSを、開発時はutils/を参照
+    base_path = Path(getattr(sys, "_MEIPASS", Path(__file__).parent))
+    config_path = base_path / "config.ini"
     with open(config_path, encoding="utf-8") as f:
         config.read_file(f)
     return config.get("LOGGING", "project_name")

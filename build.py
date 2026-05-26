@@ -7,7 +7,6 @@ def build_executable():
         "--name=VisionOCR",
         "--windowed",
         "--icon=assets/VisionOCR.ico",
-        "--add-data", ".env:.",
         "--add-data", "utils/config.ini:.",
         "main.py"
     ])
