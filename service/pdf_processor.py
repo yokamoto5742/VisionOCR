@@ -1,3 +1,5 @@
+from typing import cast
+
 import fitz  # PyMuPDF
 from PIL import Image
 
@@ -8,7 +10,7 @@ from utils.constants import UIMessages
 def _render_page_to_image(page: fitz.Page) -> Image.Image:
     """PDFページをPIL Imageへ変換"""
     pixmap = page.get_pixmap()
-    return Image.frombytes("RGB", [pixmap.width, pixmap.height], pixmap.samples)
+    return Image.frombytes("RGB", (pixmap.width, pixmap.height), pixmap.samples)
 
 
 def _ocr_page(page: fitz.Page, ocr_service: VisionOCRService) -> str:
@@ -28,11 +30,10 @@ def process_pdf_files(
     all_parts: list[str] = []
 
     for pdf_path in pdf_paths:
-        doc = fitz.open(pdf_path)
-        for page_num, page in enumerate(doc, 1):
-            footer = UIMessages.PDF_PAGE_FOOTER.format(page_num=page_num)
-            text = _ocr_page(page, ocr_service)
-            all_parts.append(f"{text}\n{footer}")
-        doc.close()
+        with fitz.open(pdf_path) as doc:
+            for page_num, page in enumerate(cast(list[fitz.Page], doc), 1):
+                footer = UIMessages.PDF_PAGE_FOOTER.format(page_num=page_num)
+                text = _ocr_page(page, ocr_service)
+                all_parts.append(f"{text}\n{footer}")
 
     return "\n\n".join(all_parts)

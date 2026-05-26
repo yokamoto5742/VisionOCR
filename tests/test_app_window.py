@@ -1,19 +1,17 @@
 import pytest
-from unittest.mock import Mock, patch, MagicMock
-import tkinter as tk
-from tkinter import TclError
+from unittest.mock import patch, MagicMock
 
-from app.app_window import OCRApplication, ButtonConfig
+from app.app_window import OCRApplication
 
 
 @pytest.fixture
 def mock_config_manager():
-    with patch('app.app_window.ConfigManager') as mock:
+    with patch("app.app_window.ConfigManager") as mock:
         instance = mock.return_value
         instance.get_input_mode.return_value = False
         instance.get_window_geometry.return_value = [100, 100, 900, 700]
         instance.get_font_size.return_value = 12
-        instance.config.get.return_value = 'MS Gothic'
+        instance.config.get.return_value = "MS Gothic"
         yield instance
 
 
@@ -47,9 +45,11 @@ def mock_text_widget():
 
 @pytest.fixture
 def app(mock_config_manager, mock_text_widget):
-    with patch('tkinter.Tk') as mock_tk, \
-            patch('tkinter.scrolledtext.ScrolledText', return_value=mock_text_widget), \
-            patch('app.app_window.ScreenCapture') as mock_screen_capture:
+    with (
+        patch("tkinter.Tk") as mock_tk,
+        patch("tkinter.scrolledtext.ScrolledText", return_value=mock_text_widget),
+        patch("app.app_window.ScreenCapture"),
+    ):
         # Tkインスタンスの設定
         mock_tk_instance = mock_tk.return_value
         mock_tk_instance.clipboard_get = MagicMock()
@@ -77,17 +77,20 @@ def test_toggle_input_mode(app):
     app.config_manager.set_input_mode.assert_called_once_with(app.is_append_mode)
 
 
-@pytest.mark.parametrize("initial_text,new_text,expected_text", [
-    ("", "新規テキスト", "新規テキスト"),
-    ("既存テキスト", "新規テキスト", "既存テキスト\n新規テキスト"),
-])
+@pytest.mark.parametrize(
+    "initial_text,new_text,expected_text",
+    [
+        ("", "新規テキスト", "新規テキスト"),
+        ("既存テキスト", "新規テキスト", "既存テキスト\n新規テキスト"),
+    ],
+)
 def test_append_mode(app, initial_text, new_text, expected_text):
     """追記モードのテスト"""
     app.is_append_mode = True
     app.text_area._content = initial_text
 
     # クリップボードの操作をモック
-    with patch.object(app.root, 'clipboard_get', return_value=new_text):
+    with patch.object(app.root, "clipboard_get", return_value=new_text):
         app.capture_screen()
 
     assert app.text_area._content == expected_text
@@ -99,7 +102,7 @@ def test_overwrite_mode(app):
     app.text_area._content = "既存テキスト"
 
     # クリップボードの操作をモック
-    with patch.object(app.root, 'clipboard_get', return_value="新規テキスト"):
+    with patch.object(app.root, "clipboard_get", return_value="新規テキスト"):
         app.capture_screen()
 
     assert app.text_area._content == "新規テキスト"
@@ -117,6 +120,6 @@ def test_save_to_file(app):
     test_text = "保存するテキスト"
     app.text_area._content = test_text
 
-    with patch('app.app_window.save_text_to_file') as mock_save:
+    with patch("app.app_window.save_text_to_file") as mock_save:
         app.save_to_file()
         mock_save.assert_called_once_with(test_text)

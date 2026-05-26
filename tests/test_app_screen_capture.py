@@ -1,8 +1,5 @@
 import pytest
 from unittest.mock import Mock, patch, MagicMock
-import tkinter as tk
-
-import pyautogui
 from PIL import Image
 
 from app.app_screen_capture import ScreenCapture
@@ -18,7 +15,7 @@ def mock_canvas():
 
 @pytest.fixture
 def mock_tk(mock_canvas):
-    with patch('tkinter.Tk') as mock:
+    with patch("tkinter.Tk") as mock:
         tk_instance = mock.return_value
         tk_instance.winfo_screenwidth.return_value = 1920
         tk_instance.winfo_screenheight.return_value = 1080
@@ -39,7 +36,7 @@ def screen_capture(mock_tk, mock_config_manager, mock_vision_ocr, mock_canvas):
 
 @pytest.fixture
 def mock_config_manager():
-    with patch('app.app_screen_capture.ConfigManager') as mock:
+    with patch("app.app_screen_capture.ConfigManager") as mock:
         config_instance = mock.return_value
         config_instance.get_screen_capture_settings.return_value = (0.3, 2)
         yield config_instance
@@ -47,7 +44,7 @@ def mock_config_manager():
 
 @pytest.fixture
 def mock_vision_ocr():
-    with patch('app.app_screen_capture.VisionOCRService') as mock:
+    with patch("app.app_screen_capture.VisionOCRService") as mock:
         ocr_instance = mock.return_value
         ocr_instance.perform_ocr.return_value = "テスト文字列"
         yield ocr_instance
@@ -60,9 +57,9 @@ def test_initialization(screen_capture, mock_tk):
     assert screen_capture.outline_width == 2
 
     # ウィンドウの属性が正しく設定されていることを確認
-    mock_tk.attributes.assert_any_call('-alpha', 0.3)
-    mock_tk.attributes.assert_any_call('-fullscreen', True)
-    mock_tk.attributes.assert_any_call('-topmost', True)
+    mock_tk.attributes.assert_any_call("-alpha", 0.3)
+    mock_tk.attributes.assert_any_call("-fullscreen", True)
+    mock_tk.attributes.assert_any_call("-topmost", True)
 
 
 def test_on_press(screen_capture):
@@ -94,9 +91,7 @@ def test_on_drag(screen_capture):
 
     # 矩形が正しく作成されたことを確認
     screen_capture.canvas.create_rectangle.assert_called_once_with(
-        100, 200, 300, 400,
-        outline='red',
-        width=screen_capture.outline_width
+        100, 200, 300, 400, outline="red", width=screen_capture.outline_width
     )
 
 
@@ -107,7 +102,7 @@ def test_process_screenshot_success(screen_capture, mock_vision_ocr):
     screen_capture.end_x = 300
     screen_capture.end_y = 400
 
-    with patch('pyautogui.screenshot') as mock_screenshot:
+    with patch("pyautogui.screenshot") as mock_screenshot:
         mock_image = Mock(spec=Image.Image)
         mock_screenshot.return_value = mock_image
 
@@ -130,9 +125,11 @@ def test_process_screenshot_small_area(screen_capture):
     screen_capture.end_x = 102  # 範囲が小さすぎる
     screen_capture.end_y = 102
 
-    with patch('tkinter.messagebox.showwarning') as mock_warning:
+    with patch("tkinter.messagebox.showwarning") as mock_warning:
         screen_capture._process_screenshot()
-        mock_warning.assert_called_once_with('OCR結果', 'スクリーンショットの範囲が小さすぎます。')
+        mock_warning.assert_called_once_with(
+            "OCR結果", "スクリーンショットの範囲が小さすぎます。"
+        )
 
 
 def test_process_screenshot_ocr_error(screen_capture, mock_vision_ocr):
@@ -145,6 +142,8 @@ def test_process_screenshot_ocr_error(screen_capture, mock_vision_ocr):
     # OCRサービスがエラーを発生させるように設定
     mock_vision_ocr.perform_ocr.side_effect = Exception("OCRエラー")
 
-    with patch('tkinter.messagebox.showerror') as mock_error:
+    with patch("tkinter.messagebox.showerror") as mock_error:
         screen_capture._process_screenshot()
-        mock_error.assert_called_once_with('OCRエラー', 'テキスト認識中にエラーが発生しました: OCRエラー')
+        mock_error.assert_called_once_with(
+            "OCRエラー", "テキスト認識中にエラーが発生しました: OCRエラー"
+        )
