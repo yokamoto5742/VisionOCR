@@ -176,6 +176,10 @@ class ConfigManager:
         """PopplerのパスをPDF変換用に取得"""
         return self.config.get("PDF", "poppler_path", fallback="")
 
+    def get_pdf_max_pages(self) -> int:
+        """OCR処理するPDFの最大ページ数を取得"""
+        return self.config.getint("PDF", "max_pages", fallback=20)
+
     def set_input_mode(self, is_append: bool) -> None:
         """入力モードを保存
 

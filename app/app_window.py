@@ -215,7 +215,8 @@ class OCRApplication:
 
         try:
             ocr_service = VisionOCRService()
-            text = process_pdf_files(list(pdf_paths), ocr_service)
+            max_pages = self.config_manager.get_pdf_max_pages()
+            text = process_pdf_files(list(pdf_paths), ocr_service, max_pages)
             text_widget_utils.set_text_content(
                 self.text_area, text, append=self.is_append_mode
             )

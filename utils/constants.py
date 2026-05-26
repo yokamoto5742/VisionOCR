@@ -102,6 +102,7 @@ class UIMessages:
     # PDF処理
     PDF_PAGE_FOOTER = "--- {page_num}ページ目 ---"
     PDF_OCR_FAILED = "[テキストを検出できませんでした]"
+    PDF_PAGE_LIMIT_WARNING = "（{max_pages}ページまで処理しました）"
 
     # 座標エラー（プログラム内部用、ユーザー表示ではない）
     COORD_INVALID = "スクリーンショットの座標が正しく設定されていません"
