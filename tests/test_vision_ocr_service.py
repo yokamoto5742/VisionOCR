@@ -8,12 +8,31 @@ from external_service.vision_ocr_service import VisionOCRService
 
 @pytest.fixture
 def mock_vision_client():
-    with patch('service.vision_ocr_service.vision.ImageAnnotatorClient') as mock_client:
+    with patch(
+        "external_service.vision_ocr_service.vision.ImageAnnotatorClient"
+    ) as mock_client:
         yield mock_client
 
 
 @pytest.fixture
-def vision_service(mock_vision_client):
+def mock_credentials():
+    with patch(
+        "external_service.vision_ocr_service.get_google_credentials"
+    ) as mock_creds:
+        mock_creds.return_value = {"type": "service_account"}
+        yield mock_creds
+
+
+@pytest.fixture
+def mock_config():
+    with patch("external_service.vision_ocr_service.ConfigManager") as mock_cfg:
+        instance = mock_cfg.return_value
+        instance.get_detection_type.return_value = "text_detection"
+        yield instance
+
+
+@pytest.fixture
+def vision_service(mock_vision_client, mock_credentials, mock_config):
     # from_service_account_infoの戻り値を設定
     mock_instance = Mock()
     mock_vision_client.from_service_account_info.return_value = mock_instance
@@ -23,7 +42,7 @@ def vision_service(mock_vision_client):
 @pytest.fixture
 def sample_image():
     # テスト用の空のPIL Imageを作成
-    return Image.new('RGB', (100, 100), color='white')
+    return Image.new("RGB", (100, 100), color="white")
 
 
 def test_successful_ocr(vision_service, mock_vision_client, sample_image):
@@ -82,7 +101,9 @@ def test_no_text_detected(vision_service, mock_vision_client, sample_image):
     with pytest.raises(RuntimeError) as exc_info:
         vision_service.perform_ocr(sample_image)
 
-    assert "OCR処理中にエラーが発生しました: テキストを検出できませんでした" in str(exc_info.value)
+    assert "OCR処理中にエラーが発生しました: テキストを検出できませんでした" in str(
+        exc_info.value
+    )
 
 
 def test_empty_text_detected(vision_service, mock_vision_client, sample_image):
@@ -103,13 +124,22 @@ def test_empty_text_detected(vision_service, mock_vision_client, sample_image):
     with pytest.raises(RuntimeError) as exc_info:
         vision_service.perform_ocr(sample_image)
 
-    assert "OCR処理中にエラーが発生しました: テキストを抽出できませんでした" in str(exc_info.value)
+    assert "OCR処理中にエラーが発生しました: テキストを抽出できませんでした" in str(
+        exc_info.value
+    )
 
 
 def test_client_initialization_error():
     # クライアント初期化エラーのテスト
-    with patch('service.vision_ocr_service.vision.ImageAnnotatorClient.from_service_account_info', side_effect=Exception("初期化エラー")):
-        with pytest.raises(RuntimeError) as exc_info:
-            VisionOCRService()
+    with patch(
+        "external_service.vision_ocr_service.get_google_credentials",
+        return_value={"type": "service_account"},
+    ):
+        with patch(
+            "external_service.vision_ocr_service.vision.ImageAnnotatorClient.from_service_account_info",
+            side_effect=Exception("初期化エラー"),
+        ):
+            with pytest.raises(RuntimeError) as exc_info:
+                VisionOCRService()
 
-        assert "Vision APIクライアントの初期化に失敗しました" in str(exc_info.value)
+            assert "Vision APIクライアントの初期化に失敗しました" in str(exc_info.value)

@@ -135,30 +135,25 @@ def error_mock_widget() -> Mock:
 
 
 def test_remove_punctuation_error(error_mock_widget: Mock) -> None:
-    with pytest.raises(ValueError) as exc_info:
+    with pytest.raises(tk.TclError):
         text_widget_utils.remove_punctuation(error_mock_widget, "、")
-    assert "テキストウィジェットの操作に失敗しました" in str(exc_info.value)
 
 
 def test_remove_spaces_error(error_mock_widget: Mock) -> None:
-    with pytest.raises(ValueError) as exc_info:
+    with pytest.raises(tk.TclError):
         text_widget_utils.remove_spaces(error_mock_widget)
-    assert "テキストウィジェットの操作に失敗しました" in str(exc_info.value)
 
 
 def test_remove_linebreaks_error(error_mock_widget: Mock) -> None:
-    with pytest.raises(ValueError) as exc_info:
+    with pytest.raises(tk.TclError):
         text_widget_utils.remove_linebreaks(error_mock_widget)
-    assert "テキストウィジェットの操作に失敗しました" in str(exc_info.value)
 
 
 def test_get_text_content_error(error_mock_widget: Mock) -> None:
-    with pytest.raises(ValueError) as exc_info:
+    with pytest.raises(tk.TclError):
         text_widget_utils.get_text_content(error_mock_widget)
-    assert "テキストウィジェットの操作に失敗しました" in str(exc_info.value)
 
 
 def test_set_text_content_error(error_mock_widget: Mock) -> None:
-    with pytest.raises(ValueError) as exc_info:
+    with pytest.raises(tk.TclError):
         text_widget_utils.set_text_content(error_mock_widget, "テスト")
-    assert "テキストウィジェットの操作に失敗しました" in str(exc_info.value)

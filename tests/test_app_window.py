@@ -89,8 +89,10 @@ def test_append_mode(app, initial_text, new_text, expected_text):
     app.is_append_mode = True
     app.text_area._content = initial_text
 
-    # クリップボードの操作をモック
-    with patch.object(app.root, "clipboard_get", return_value=new_text):
+    mock_capture_instance = MagicMock()
+    mock_capture_instance.result_text = new_text
+
+    with patch("app.app_window.ScreenCapture", return_value=mock_capture_instance):
         app.capture_screen()
 
     assert app.text_area._content == expected_text
@@ -101,8 +103,10 @@ def test_overwrite_mode(app):
     app.is_append_mode = False
     app.text_area._content = "既存テキスト"
 
-    # クリップボードの操作をモック
-    with patch.object(app.root, "clipboard_get", return_value="新規テキスト"):
+    mock_capture_instance = MagicMock()
+    mock_capture_instance.result_text = "新規テキスト"
+
+    with patch("app.app_window.ScreenCapture", return_value=mock_capture_instance):
         app.capture_screen()
 
     assert app.text_area._content == "新規テキスト"

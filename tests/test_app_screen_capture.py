@@ -114,8 +114,8 @@ def test_process_screenshot_success(screen_capture, mock_vision_ocr):
         # OCRが実行されたことを確認
         mock_vision_ocr.perform_ocr.assert_called_once_with(mock_image)
 
-        # クリップボードにテキストが設定されたことを確認
-        screen_capture.root.clipboard_append.assert_called_once_with("テスト文字列")
+        # result_textにテキストが設定されたことを確認
+        assert screen_capture.result_text == "テスト文字列"
 
 
 def test_process_screenshot_small_area(screen_capture):
