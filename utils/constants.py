@@ -54,7 +54,6 @@ class UILabels:
     BTN_REMOVE_SEPARATOR = "区切り削除"
     MODE_APPEND = "追記"
     MODE_OVERWRITE = "上書き"
-    MODE_BUTTON_SUFFIX = "モード"
 
     # ダイアログタイトル
     TITLE_ERROR = "エラー"

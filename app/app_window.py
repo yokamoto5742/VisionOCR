@@ -57,15 +57,10 @@ class OCRApplication:
         self._create_text_area()
         self._create_bottom_buttons()
 
-    def toggle_input_mode(self) -> None:
-        """OCR結果の入力モードを追記と上書きで切り替え"""
-        self.is_append_mode = not self.is_append_mode
+    def _on_mode_change(self, value: str) -> None:
+        """プルダウンでモードが変更されたときの処理"""
+        self.is_append_mode = value == UILabels.MODE_APPEND
         self.config_manager.set_input_mode(self.is_append_mode)
-        self.mode_button.config(text=self._mode_button_text())
-
-    def _mode_button_text(self) -> str:
-        mode = UILabels.MODE_APPEND if self.is_append_mode else UILabels.MODE_OVERWRITE
-        return f"{mode}{UILabels.MODE_BUTTON_SUFFIX}"
 
     def _create_top_buttons(self) -> None:
         button_frame = tk.Frame(self.root)
@@ -83,10 +78,18 @@ class OCRApplication:
 
         create_buttons(button_frame, top_buttons)
 
-        self.mode_button = tk.Button(
-            button_frame, text=self._mode_button_text(), command=self.toggle_input_mode
+        initial_mode = (
+            UILabels.MODE_APPEND if self.is_append_mode else UILabels.MODE_OVERWRITE
         )
-        self.mode_button.pack(side=tk.LEFT, padx=UILayout.BUTTON_PADDING)
+        self.mode_var = tk.StringVar(master=self.root, value=initial_mode)
+        self.mode_menu = tk.OptionMenu(
+            button_frame,
+            self.mode_var,
+            UILabels.MODE_APPEND,
+            UILabels.MODE_OVERWRITE,
+            command=self._on_mode_change,
+        )
+        self.mode_menu.pack(side=tk.LEFT, padx=UILayout.BUTTON_PADDING)
 
     def _create_text_area(self) -> None:
         try:

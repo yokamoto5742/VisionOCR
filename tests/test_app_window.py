@@ -69,12 +69,15 @@ def test_initialization(app, mock_config_manager):
     mock_config_manager.get_window_geometry.assert_called_once()
 
 
-def test_toggle_input_mode(app):
-    """入力モードの切り替えテスト"""
-    initial_mode = app.is_append_mode
-    app.toggle_input_mode()
-    assert app.is_append_mode != initial_mode
-    app.config_manager.set_input_mode.assert_called_once_with(app.is_append_mode)
+def test_on_mode_change(app):
+    """プルダウンでの入力モード変更テスト"""
+    app._on_mode_change("追記")
+    assert app.is_append_mode is True
+    app.config_manager.set_input_mode.assert_called_with(True)
+
+    app._on_mode_change("上書き")
+    assert app.is_append_mode is False
+    app.config_manager.set_input_mode.assert_called_with(False)
 
 
 @pytest.mark.parametrize(
