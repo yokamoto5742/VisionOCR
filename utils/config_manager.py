@@ -172,6 +172,16 @@ class ConfigManager:
             return "text_detection"
         return value
 
+    def set_detection_type(self, detection_type: str) -> None:
+        """OCR検出タイプを保存
+
+        Args:
+            detection_type: 'text_detection' または 'document_text_detection'
+        """
+        self._ensure_section("VisionOCR")
+        self.config["VisionOCR"]["detection_type"] = detection_type
+        self.save_config()
+
     def get_poppler_path(self) -> str:
         """PopplerのパスをPDF変換用に取得"""
         return self.config.get("PDF", "poppler_path", fallback="")

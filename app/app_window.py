@@ -17,6 +17,13 @@ from utils.constants import (
 )
 from widgets.button_factory import ButtonConfig, create_buttons
 
+# 表示ラベルとAPIパラメータのマッピング
+_DETECTION_LABEL_TO_TYPE = {
+    UILabels.DETECTION_TEXT: "text_detection",
+    UILabels.DETECTION_DOCUMENT: "document_text_detection",
+}
+_DETECTION_TYPE_TO_LABEL = {v: k for k, v in _DETECTION_LABEL_TO_TYPE.items()}
+
 
 class OCRApplication:
     """Google Cloud Vision APIを使用したOCRアプリケーションのメインUI"""
@@ -30,12 +37,13 @@ class OCRApplication:
             )
         )
         self.is_append_mode = self.config_manager.get_input_mode()
+        self._detection_type = self.config_manager.get_detection_type()
         self._initialize_application()
 
     def _initialize_application(self) -> None:
         self._setup_window_geometry()
         self._create_gui()
-        self.root.protocol("WM_DELETE_WINDOW", self.root.quit)
+        self.root.protocol("WM_DELETE_WINDOW", self.root.destroy)
 
     def _setup_window_geometry(self) -> None:
         try:
@@ -62,6 +70,11 @@ class OCRApplication:
         self.is_append_mode = value == UILabels.MODE_APPEND
         self.config_manager.set_input_mode(self.is_append_mode)
 
+    def _on_detection_type_change(self, value: str) -> None:
+        """検出タイプのプルダウンが変更されたときの処理"""
+        self._detection_type = _DETECTION_LABEL_TO_TYPE[value]
+        self.config_manager.set_detection_type(self._detection_type)
+
     def _create_top_buttons(self) -> None:
         button_frame = tk.Frame(self.root)
         button_frame.pack(
@@ -77,6 +90,21 @@ class OCRApplication:
         ]
 
         create_buttons(button_frame, top_buttons)
+
+        initial_detection_label = _DETECTION_TYPE_TO_LABEL.get(
+            self._detection_type, UILabels.DETECTION_TEXT
+        )
+        self.detection_var = tk.StringVar(
+            master=self.root, value=initial_detection_label
+        )
+        self.detection_menu = tk.OptionMenu(
+            button_frame,
+            self.detection_var,
+            UILabels.DETECTION_TEXT,
+            UILabels.DETECTION_DOCUMENT,
+            command=self._on_detection_type_change,
+        )
+        self.detection_menu.pack(side=tk.LEFT, padx=UILayout.BUTTON_PADDING)
 
         initial_mode = (
             UILabels.MODE_APPEND if self.is_append_mode else UILabels.MODE_OVERWRITE
@@ -141,7 +169,7 @@ class OCRApplication:
                 UILabels.BTN_REMOVE_SEPARATOR,
                 lambda: text_widget_utils.remove_page_separators(self.text_area),
             ),
-            ButtonConfig(UILabels.BTN_CLOSE, self.root.quit),
+            ButtonConfig(UILabels.BTN_CLOSE, self.root.destroy),
         ]
 
         create_buttons(bottom_frame, bottom_buttons)
